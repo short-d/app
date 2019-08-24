@@ -1,8 +1,8 @@
 package mdgraphql
 
 import (
-	"app/fw"
-	"app/modern/mdhttp"
+	"github.com/byliuyang/app/fw"
+	"github.com/byliuyang/app/modern/mdhttp"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"

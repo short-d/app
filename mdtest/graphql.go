@@ -1,7 +1,7 @@
 package mdtest
 
 import (
-	"app/fw"
+	"github.com/byliuyang/app/fw"
 
 	"github.com/graph-gophers/graphql-go"
 )

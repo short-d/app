@@ -1,4 +1,4 @@
-module app
+module github.com/byliuyang/app
 
 go 1.12
 

@@ -1,8 +1,9 @@
 package mdlogger
 
 import (
-	"app/fw"
 	"log"
+
+	"github.com/byliuyang/app/fw"
 )
 
 type Local struct {

@@ -1,9 +1,10 @@
 package mdrequest
 
 import (
-	"app/fw"
 	"encoding/json"
 	"net/http"
+
+	"github.com/byliuyang/app/fw"
 )
 
 type graphQlResponse struct {

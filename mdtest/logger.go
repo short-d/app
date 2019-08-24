@@ -1,6 +1,6 @@
 package mdtest
 
-import "app/fw"
+import "github.com/byliuyang/app/fw"
 
 type logger struct{}
 
