@@ -1,1 +1,5 @@
+# Jetbrains IDEs
 .idea
+
+# Code coverage
+coverage.txt
