@@ -1,14 +1,5 @@
-# app
-Reusable framework for Go apps & CLIs
+package tool
 
-## Examples
-### App
-### [Short](https://github.com/byliuyang/short)
-![Short screenshots](example/short.png)
-
-### CLI
-![CLI screenshots](example/cli.png)
-```go
 import (
 	"fmt"
 	"os"
@@ -21,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ExampleTool struct {
+type SampleTool struct {
 	term            terminal.Terminal
 	exitChannel     eventbus.DataChannel
 	keyUpChannel    eventbus.DataChannel
@@ -33,43 +24,43 @@ type ExampleTool struct {
 	languages       []string
 }
 
-func (e ExampleTool) Execute() {
-	if err := e.rootCmd.Execute(); err != nil {
+func (s SampleTool) Execute() {
+	if err := s.rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
-func (e ExampleTool) bindKeys() {
-	e.term.OnKeyPress(terminal.CtrlEName, e.exitChannel)
-	e.term.OnKeyPress(terminal.CursorUpName, e.keyUpChannel)
-	e.term.OnKeyPress(terminal.CursorDownName, e.keyDownChannel)
-	e.term.OnKeyPress(terminal.EnterName, e.keyEnterChannel)
+func (s SampleTool) bindKeys() {
+	s.term.OnKeyPress(terminal.CtrlEName, s.exitChannel)
+	s.term.OnKeyPress(terminal.CursorUpName, s.keyUpChannel)
+	s.term.OnKeyPress(terminal.CursorDownName, s.keyDownChannel)
+	s.term.OnKeyPress(terminal.EnterName, s.keyEnterChannel)
 	fmt.Println("To exit, press Ctrl + E")
 	fmt.Println("To select an item, press Enter")
 }
 
-func (e ExampleTool) handleEvents() {
-	e.cli.EnterMainLoop(func() {
+func (s SampleTool) handleEvents() {
+	s.cli.EnterMainLoop(func() {
 		select {
-		case <-e.exitChannel:
-			e.radio.Remove()
+		case <-s.exitChannel:
+			s.radio.Remove()
 			fmt.Println("Terminating process...")
-			e.cli.Exit()
-		case <-e.keyUpChannel:
-			e.radio.Prev()
-		case <-e.keyDownChannel:
-			e.radio.Next()
-		case <-e.keyEnterChannel:
-			e.radio.Remove()
-			selectedItem := e.languages[e.radio.SelectedIdx()]
+			s.cli.Exit()
+		case <-s.keyUpChannel:
+			s.radio.Prev()
+		case <-s.keyDownChannel:
+			s.radio.Next()
+		case <-s.keyEnterChannel:
+			s.radio.Remove()
+			selectedItem := s.languages[s.radio.SelectedIdx()]
 			fmt.Printf("Selected %s\n", selectedItem)
-			e.cli.Exit()
+			s.cli.Exit()
 		}
 	})
 }
 
-func NewExampleTool() ExampleTool {
+func NewSampleTool() SampleTool {
 	term := terminal.NewTerminal()
 	languages := []string{
 		"Go",
@@ -80,7 +71,7 @@ func NewExampleTool() ExampleTool {
 		"Rust",
 	}
 
-	exampleTool := ExampleTool{
+	sampleTool := SampleTool{
 		term:            term,
 		cli:             cli.NewCommandLineTool(term),
 		exitChannel:     make(eventbus.DataChannel),
@@ -92,18 +83,11 @@ func NewExampleTool() ExampleTool {
 	}
 	rootCmd := &cobra.Command{
 		Run: func(cmd *cobra.Command, args []string) {
-			exampleTool.bindKeys()
-			exampleTool.radio.Render()
-			exampleTool.handleEvents()
+			sampleTool.bindKeys()
+			sampleTool.radio.Render()
+			sampleTool.handleEvents()
 		},
 	}
-	exampleTool.rootCmd = rootCmd
-	return exampleTool
+	sampleTool.rootCmd = rootCmd
+	return sampleTool
 }
-```
-
-## Author
-Harry Liu - [byliuyang](https://github.com/byliuyang)
-
-## License
-This project is maintained under MIT license
