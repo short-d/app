@@ -70,6 +70,10 @@ func (r Radio) Remove() {
 	r.term.ShowCursor()
 }
 
+func (r *Radio) SelectedIdx() int {
+	return r.selectedIdx
+}
+
 func NewRadio(items []string, term terminal.Terminal) Radio {
 	radio := Radio{
 		term:        term,
