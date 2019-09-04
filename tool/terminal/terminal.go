@@ -10,8 +10,10 @@ import (
 	"github.com/byliuyang/eventbus"
 )
 
+type colorCode int
+
 const (
-	blackForeground = 0x3330 + iota
+	blackForeground colorCode = 0x3330 + iota
 	redForeground
 	greenForeground
 	yellowForeground
@@ -72,8 +74,8 @@ var keyNames = map[string]string{
 type Terminal struct {
 	out             io.Writer
 	in              io.Reader
-	foregroundColor int
-	backgroundColor int
+	foregroundColor colorCode
+	backgroundColor colorCode
 	eventBus        eventbus.EventBus
 }
 
@@ -102,11 +104,11 @@ func (t Terminal) ShowCursor() {
 	t.execute("tput", "cnorm")
 }
 
-func (t *Terminal) SetForegroundColor(color int) {
+func (t *Terminal) SetForegroundColor(color colorCode) {
 	t.foregroundColor = color
 }
 
-func (t *Terminal) SetBackgroundColor(color int) {
+func (t *Terminal) SetBackgroundColor(color colorCode) {
 	t.backgroundColor = color
 }
 
