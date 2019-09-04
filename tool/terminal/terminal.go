@@ -1,7 +1,6 @@
 package terminal
 
 import (
-	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -47,7 +46,7 @@ var (
 	cursorForwardKey  = string([]byte{esc, 0x5b, 0x43})
 	cursorBackwardKey = string([]byte{esc, 0x5b, 0x44})
 	CtrlEKey          = string([]byte{0x05})
-	enterKey          = hex.Dump([]byte{0x0a})
+	enterKey          = string([]byte{0x0a})
 )
 
 const (
