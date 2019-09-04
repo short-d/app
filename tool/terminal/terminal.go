@@ -45,7 +45,7 @@ var (
 	cursorDownKey     = string([]byte{esc, 0x5b, 0x42})
 	cursorForwardKey  = string([]byte{esc, 0x5b, 0x43})
 	cursorBackwardKey = string([]byte{esc, 0x5b, 0x44})
-	CtrlEKey          = string([]byte{0x05})
+	ctrlEKey          = string([]byte{0x05})
 	enterKey          = string([]byte{0x0a})
 )
 
@@ -63,7 +63,7 @@ var keyNames = map[string]string{
 	cursorDownKey:     CursorDownName,
 	cursorForwardKey:  CursorForwardName,
 	cursorBackwardKey: CursorBackwardName,
-	CtrlEKey:          CtrlEName,
+	ctrlEKey:          CtrlEName,
 	enterKey:          EnterName,
 }
 
