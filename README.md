@@ -14,7 +14,6 @@ import (
 	"os"
 
 	"github.com/byliuyang/app/tool/cli"
-
 	"github.com/byliuyang/app/tool/terminal"
 	"github.com/byliuyang/app/tool/ui"
 	"github.com/byliuyang/eventbus"
