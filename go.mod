@@ -3,6 +3,7 @@ module github.com/byliuyang/app
 go 1.12
 
 require (
+	github.com/byliuyang/eventbus v0.0.0-20190903053111-4d5ecf1dbc01
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
