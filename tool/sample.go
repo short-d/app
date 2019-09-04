@@ -1,14 +1,5 @@
-# app
-Reusable framework for Go apps & command line tools
+package tool
 
-## Examples
-### App
-### [Short](https://github.com/byliuyang/short)
-![Short screenshots](example/short.png)
-
-### CLI
-![CLI screenshots](example/cli.png)
-```go
 import (
 	"fmt"
 	"os"
@@ -99,10 +90,3 @@ func NewSampleTool() SampleTool {
 	sampleTool.rootCmd = rootCmd
 	return sampleTool
 }
-```
-
-## Author
-Harry Liu - [byliuyang](https://github.com/byliuyang)
-
-## License
-This project is maintained under MIT license
