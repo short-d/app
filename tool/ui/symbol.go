@@ -1,0 +1,3 @@
+package ui
+
+const FilledSquare = "■"
