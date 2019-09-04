@@ -10,7 +10,7 @@ import (
 	"github.com/byliuyang/eventbus"
 )
 
-const esc = 27
+const esc = 0x1B
 
 type ColorCode string
 type vt100ColorCodes struct {
