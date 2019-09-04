@@ -1,6 +1,7 @@
 package terminal
 
 import (
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -10,46 +11,44 @@ import (
 	"github.com/byliuyang/eventbus"
 )
 
-const esc = 0x1B
+const (
+	blackForeground = 0x3330 + iota
+	redForeground
+	greenForeground
+	yellowForeground
+	blueForeground
+	magentaForeground
+	cyanForeground
+	whiteForeground
+)
 
-type ColorCode string
-type vt100ColorCodes struct {
-	Black   ColorCode
-	Red     ColorCode
-	Green   ColorCode
-	Yellow  ColorCode
-	Blue    ColorCode
-	Magenta ColorCode
-	Cyan    ColorCode
-	White   ColorCode
-}
-
-var ForegroundColor = vt100ColorCodes{
-	Black:   "30",
-	Red:     "31",
-	Green:   "32",
-	Yellow:  "33",
-	Blue:    "34",
-	Magenta: "35",
-	Cyan:    "36",
-	White:   "37",
-}
-
-var BackgroundColor = vt100ColorCodes{
-	Black:   "40",
-	Red:     "41",
-	Green:   "42",
-	Yellow:  "43",
-	Blue:    "44",
-	Magenta: "45",
-	Cyan:    "46",
-	White:   "47",
-}
+const (
+	blackBackground = 0x3430 + iota
+	redBackground
+	greenBackground
+	yellowBackground
+	blueBackground
+	magentaBackground
+	cyanBackground
+	whiteBackground
+)
 
 type Key struct {
 	escapeSequence string
 	name           string
 }
+
+const esc = 0x1b
+const carriageReturn = 0x0d
+
+var (
+	cursorUpKey       = string([]byte{esc, 0x5b, 0x41})
+	cursorDownKey     = string([]byte{esc, 0x5b, 0x42})
+	cursorForwardKey  = string([]byte{esc, 0x5b, 0x43})
+	cursorBackwardKey = string([]byte{esc, 0x5b, 0x44})
+	CtrlEKey          = string([]byte{0x05})
+	enterKey          = hex.Dump([]byte{0x0a})
+)
 
 const (
 	CursorUpName       = "cursorUp"
@@ -57,14 +56,16 @@ const (
 	CursorForwardName  = "cursorForward"
 	CursorBackwardName = "cursorDownward"
 	CtrlEName          = "Ctrl+E"
+	EnterName          = "enter"
 )
 
 var keyNames = map[string]string{
-	"\033[A": CursorUpName,
-	"\033[B": CursorDownName,
-	"\033[C": CursorForwardName,
-	"\033[D": CursorBackwardName,
-	"\005":   CtrlEName,
+	cursorUpKey:       CursorUpName,
+	cursorDownKey:     CursorDownName,
+	cursorForwardKey:  CursorForwardName,
+	cursorBackwardKey: CursorBackwardName,
+	CtrlEKey:          CtrlEName,
+	enterKey:          EnterName,
 }
 
 // Terminal manipulates terminals that implements VT100 standard:
@@ -72,8 +73,8 @@ var keyNames = map[string]string{
 type Terminal struct {
 	out             io.Writer
 	in              io.Reader
-	foregroundColor ColorCode
-	backgroundColor ColorCode
+	foregroundColor int
+	backgroundColor int
 	eventBus        eventbus.EventBus
 }
 
@@ -102,17 +103,12 @@ func (t Terminal) ShowCursor() {
 	t.execute("tput", "cnorm")
 }
 
-func (t *Terminal) SetForegroundColor(color ColorCode) {
+func (t *Terminal) SetForegroundColor(color int) {
 	t.foregroundColor = color
 }
 
-func (t *Terminal) SetBackgroundColor(color ColorCode) {
+func (t *Terminal) SetBackgroundColor(color int) {
 	t.backgroundColor = color
-}
-
-func (t Terminal) UpdateGraphicsMode() {
-	t.turnOffTextAttributes()
-	t.escape(fmt.Sprintf("%s%sm", t.foregroundColor, t.backgroundColor))
 }
 
 func (t Terminal) Print(text string) {
@@ -120,30 +116,6 @@ func (t Terminal) Print(text string) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func (t Terminal) ClearLine() {
-	t.escape("2K\r")
-}
-
-func (t Terminal) NewLine() {
-	t.Print("\n")
-}
-
-func (t Terminal) MoveCursorUp(numLines int) {
-	t.escape(fmt.Sprintf("%dA", numLines))
-}
-
-func (t Terminal) MoveCursorDown(numLines int) {
-	t.escape(fmt.Sprintf("%dB", numLines))
-}
-
-func (t Terminal) MoveCursorForward(numLines int) {
-	t.escape(fmt.Sprintf("%dC", numLines))
-}
-
-func (t Terminal) MoveCursorBackward(numLines int) {
-	t.escape(fmt.Sprintf("%dD", numLines))
 }
 
 func (t Terminal) Read() []byte {
@@ -202,12 +174,46 @@ func (t Terminal) StartEventLoop() {
 	}()
 }
 
+func (t Terminal) UpdateGraphicsMode() {
+	t.turnOffTextAttributes()
+	t.escape(append(
+		[]byte{},
+		byte(t.foregroundColor),
+		byte(t.backgroundColor),
+		0x6d,
+	))
+}
+
+func (t Terminal) ClearLine() {
+	t.escape([]byte{0x32, 0x4b, carriageReturn})
+}
+
+func (t Terminal) NewLine() {
+	t.Print("\n")
+}
+
+func (t Terminal) MoveCursorUp(numLines int) {
+	t.escape([]byte{byte(numLines), 0x41})
+}
+
+func (t Terminal) MoveCursorDown(numLines int) {
+	t.escape([]byte{byte(numLines), 0x42})
+}
+
+func (t Terminal) MoveCursorForward(numLines int) {
+	t.escape([]byte{byte(numLines), 0x43})
+}
+
+func (t Terminal) MoveCursorBackward(numLines int) {
+	t.escape([]byte{byte(numLines), 0x44})
+}
+
 func (t Terminal) SaveCursorPosition() {
-	t.escape("s")
+	t.escape([]byte{0x73})
 }
 
 func (t Terminal) RestoreCursorPosition() {
-	t.escape("u")
+	t.escape([]byte{0x75})
 }
 
 func (t Terminal) OnKeyPress(keyName string, ch eventbus.DataChannel) {
@@ -215,11 +221,11 @@ func (t Terminal) OnKeyPress(keyName string, ch eventbus.DataChannel) {
 }
 
 func (t Terminal) turnOffTextAttributes() {
-	t.escape("0m")
+	t.escape([]byte{0x30, 0x6d})
 }
 
-func (t Terminal) escape(sequence string) {
-	_, err := fmt.Fprintf(t.out, "\033[%s", sequence)
+func (t Terminal) escape(sequence []byte) {
+	_, err := t.out.Write(append([]byte{esc, 0x5b}, sequence...))
 	if err != nil {
 		panic(err)
 	}
