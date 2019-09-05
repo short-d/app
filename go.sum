@@ -22,6 +22,8 @@ github.com/byliuyang/eventbus v0.0.0-20190904072853-f4beee904439 h1:fv+ZqW53C69M
 github.com/byliuyang/eventbus v0.0.0-20190904072853-f4beee904439/go.mod h1:V4Xyu661XQclEjPw/VZVdBDRqYV5AeeMFI/skRAQc+U=
 github.com/byliuyang/eventbus v0.0.0-20190904082333-ed3b9b6ad38d h1:5tkyVPLxIIA24K2WOBytrzOKDJIapbbuUC7ZgNIXm98=
 github.com/byliuyang/eventbus v0.0.0-20190904082333-ed3b9b6ad38d/go.mod h1:V4Xyu661XQclEjPw/VZVdBDRqYV5AeeMFI/skRAQc+U=
+github.com/byliuyang/eventbus v0.0.0-20190905025612-ee6985030d5b h1:CsSf45Xu8cy75ItXfN6WSke/0GTQeiOxDHRsABtOYzw=
+github.com/byliuyang/eventbus v0.0.0-20190905025612-ee6985030d5b/go.mod h1:r0/JGVFQObWPCDGD5J+UU9W8eqnnEzhfFUtxsfLAhLg=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=

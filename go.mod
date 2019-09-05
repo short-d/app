@@ -1,10 +1,10 @@
 module github.com/byliuyang/app
 
-go 1.12
+go 1.13
 
 require (
 	cloud.google.com/go v0.44.3 // indirect
-	github.com/byliuyang/eventbus v0.0.0-20190904082333-ed3b9b6ad38d
+	github.com/byliuyang/eventbus v0.0.0-20190905025612-ee6985030d5b
 	github.com/coreos/bbolt v1.3.3 // indirect
 	github.com/coreos/etcd v3.3.15+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
@@ -27,8 +27,6 @@ require (
 	github.com/lib/pq v1.2.0
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
