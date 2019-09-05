@@ -63,11 +63,16 @@ func NewSampleTool() SampleTool {
 	term := terminal.NewTerminal()
 	languages := []string{
 		"Go",
+		"Rust",
+		"C",
 		"C++",
 		"Java",
 		"Python",
+		"C#",
 		"JavaScript",
-		"Rust",
+		"TypeScript",
+		"Swift",
+		"Kotlin",
 	}
 
 	sampleTool := SampleTool{
@@ -77,7 +82,7 @@ func NewSampleTool() SampleTool {
 		keyUpChannel:    make(eventbus.DataChannel),
 		keyDownChannel:  make(eventbus.DataChannel),
 		keyEnterChannel: make(eventbus.DataChannel),
-		radio:           ui.NewRadio(languages, term),
+		radio:           ui.NewRadio(languages, 3, term),
 		languages:       languages,
 	}
 	rootCmd := &cobra.Command{
