@@ -36,11 +36,11 @@ func (r Radio) Clear() {
 		return
 	}
 
+	defer r.term.ClearLine()
 	for idx := 0; idx < r.maxRows-1; idx++ {
 		r.term.ClearLine()
 		r.term.MoveCursorUp(1)
 	}
-	r.term.ClearLine()
 }
 
 func maxInt(num1 int, num2 int) int {
@@ -80,8 +80,8 @@ func (r *Radio) Next() {
 }
 
 func (r Radio) Remove() {
+	defer r.term.ShowCursor()
 	r.Clear()
-	r.term.ShowCursor()
 }
 
 func (r *Radio) SelectedIdx() int {
