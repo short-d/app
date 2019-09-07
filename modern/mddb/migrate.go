@@ -16,7 +16,8 @@ func (p PostgresMigrationTool) Migrate(db *sql.DB, migrationRoot string) error {
 	migrations := &migrate.FileMigrationSource{
 		Dir: migrationRoot,
 	}
-	_, err := migrate.Exec(db, "postgres", migrations, migrate.Up)
+	_, err := migrate.Exec(db, "postgres", migrations, migrate.Down)
+	_, err = migrate.Exec(db, "postgres", migrations, migrate.Up)
 	return err
 }
 
