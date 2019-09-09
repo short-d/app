@@ -1,26 +1,49 @@
 package mdtest
 
-import "github.com/byliuyang/app/fw"
+import (
+	"strings"
 
-type tracer struct {
+	"github.com/byliuyang/app/fw"
+)
+
+var _ fw.Tracer = (*TracerFake)(nil)
+
+type TracerFake struct {
+	Traces []string
 }
 
-type fakeTrace struct {
+func (t *TracerFake) BeginTrace(name string) fw.Segment {
+	return &TraceFake{
+		name:   name,
+		tracer: t,
+		trace:  make([]string, 0),
+	}
 }
 
-func (fakeTrace) End() {
+func NewTracerFake() TracerFake {
+	return TracerFake{
+		Traces: make([]string, 0),
+	}
 }
 
-func (fakeTrace) Next(name string) fw.Trace {
-	return fakeTrace{}
+var _ fw.Segment = (*TraceFake)(nil)
+
+type TraceFake struct {
+	tracer *TracerFake
+	name   string
+	trace  []string
 }
 
-func (tracer) BeginTrace(name string) fw.Trace {
-	return fakeTrace{}
+func (t *TraceFake) End() {
+	t.trace = append(t.trace, t.name)
+	t.tracer.Traces = append(t.tracer.Traces, strings.Join(t.trace, "->"))
 }
 
-func (tracer) Begin() func(string) {
-	return func(s string) {}
+func (t TraceFake) Next(name string) fw.Segment {
+	t.trace = append(t.trace, t.name)
+	return &TraceFake{
+		tracer: t.tracer,
+		name:   name,
+		trace:  t.trace,
+	}
 }
-
-var TracerFake fw.Tracer = tracer{}

@@ -17,7 +17,7 @@ type LocalTrace struct {
 	start time.Time
 }
 
-func (t LocalTrace) Next(name string) fw.Trace {
+func (t LocalTrace) Next(name string) fw.Segment {
 	start := time.Now()
 	log.Printf("[Trace Start id=%s name=%s startAt=%v]", t.id, name, start)
 	return LocalTrace{
@@ -33,7 +33,7 @@ func (t LocalTrace) End() {
 	log.Printf("[Trace End   id=%s name=%s endAt=%v duration=%v]", t.id, t.name, end, diff)
 }
 
-func (Local) BeginTrace(name string) fw.Trace {
+func (Local) BeginTrace(name string) fw.Segment {
 	id := uuid.NewV4().String()
 	start := time.Now()
 
