@@ -6,18 +6,18 @@ import (
 	"github.com/byliuyang/app/fw"
 )
 
-type CryptoTokenizer struct {
+var _ fw.CryptoTokenizer = (*CryptoTokenizerFake)(nil)
+
+type CryptoTokenizerFake struct {
 }
 
-func (t CryptoTokenizer) Encode(payload fw.TokenPayload) (string, error) {
+func (c CryptoTokenizerFake) Encode(payload fw.TokenPayload) (string, error) {
 	buf, err := json.Marshal(payload)
 	return string(buf), err
 }
 
-func (t CryptoTokenizer) Decode(tokenStr string) (fw.TokenPayload, error) {
+func (c CryptoTokenizerFake) Decode(tokenStr string) (fw.TokenPayload, error) {
 	payload := map[string]interface{}{}
 	err := json.Unmarshal([]byte(tokenStr), &payload)
 	return payload, err
 }
-
-var CryptoTokenizerFake fw.CryptoTokenizer = CryptoTokenizer{}

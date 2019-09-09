@@ -5,19 +5,15 @@ import (
 )
 
 type Timer struct {
-	currentTime time.Time
-}
-
-func (t *Timer) SetCurrentTime(currentTime time.Time) {
-	t.currentTime = currentTime
+	CurrentTime time.Time
 }
 
 func (t Timer) Now() time.Time {
-	return t.currentTime
+	return t.CurrentTime
 }
 
 func NewTimerFake(currentTime time.Time) Timer {
 	return Timer{
-		currentTime: currentTime,
+		CurrentTime: currentTime,
 	}
 }
