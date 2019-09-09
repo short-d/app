@@ -2,12 +2,30 @@ package mdtest
 
 import "github.com/byliuyang/app/fw"
 
-type logger struct{}
+var _ fw.Logger = (*LoggerFake)(nil)
 
-func (logger) Info(info string) {}
+type LoggerFake struct {
+	Infos   []string
+	Errors  []error
+	Crashes []error
+}
 
-func (logger) Error(err error) {}
+func (l *LoggerFake) Info(info string) {
+	l.Infos = append(l.Infos, info)
+}
 
-func (logger) Crash(err error) {}
+func (l *LoggerFake) Error(err error) {
+	l.Errors = append(l.Errors, err)
+}
 
-var LoggerFake fw.Logger = logger{}
+func (l *LoggerFake) Crash(err error) {
+	l.Crashes = append(l.Crashes, err)
+}
+
+func NewLoggerFake() LoggerFake {
+	return LoggerFake{
+		Infos:   make([]string, 0),
+		Errors:  make([]error, 0),
+		Crashes: make([]error, 0),
+	}
+}
