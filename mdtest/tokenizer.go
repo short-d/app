@@ -21,3 +21,7 @@ func (c CryptoTokenizerFake) Decode(tokenStr string) (fw.TokenPayload, error) {
 	err := json.Unmarshal([]byte(tokenStr), &payload)
 	return payload, err
 }
+
+func NewCryptoTokenizerFake() CryptoTokenizerFake {
+	return CryptoTokenizerFake{}
+}
