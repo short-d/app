@@ -1,10 +1,10 @@
 package fw
 
-type Trace interface {
+type Segment interface {
 	End()
-	Next(name string) Trace
+	Next(name string) Segment
 }
 
 type Tracer interface {
-	BeginTrace(name string) Trace
+	BeginTrace(name string) Segment
 }
