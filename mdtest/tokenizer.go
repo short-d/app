@@ -20,4 +20,4 @@ func (t CryptoTokenizer) Decode(tokenStr string) (fw.TokenPayload, error) {
 	return payload, err
 }
 
-var FakeCryptoTokenizer fw.CryptoTokenizer = CryptoTokenizer{}
+var CryptoTokenizerFake fw.CryptoTokenizer = CryptoTokenizer{}

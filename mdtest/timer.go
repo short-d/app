@@ -16,7 +16,7 @@ func (t Timer) Now() time.Time {
 	return t.currentTime
 }
 
-func NewFakeTimer(currentTime time.Time) Timer {
+func NewTimerFake(currentTime time.Time) Timer {
 	return Timer{
 		currentTime: currentTime,
 	}

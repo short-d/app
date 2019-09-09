@@ -10,4 +10,4 @@ func (logger) Error(err error) {}
 
 func (logger) Crash(err error) {}
 
-var FakeLogger fw.Logger = logger{}
+var LoggerFake fw.Logger = logger{}
