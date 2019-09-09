@@ -23,4 +23,4 @@ func (tracer) Begin() func(string) {
 	return func(s string) {}
 }
 
-var FakeTracer fw.Tracer = tracer{}
+var TracerFake fw.Tracer = tracer{}
