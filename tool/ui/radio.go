@@ -89,6 +89,10 @@ func (r *Radio) SelectedIdx() int {
 }
 
 func NewRadio(items []string, maxRows int, term terminal.Terminal) Radio {
+	if maxRows > len(items) {
+		maxRows = len(items)
+	}
+
 	radio := Radio{
 		term:        term,
 		items:       items,
