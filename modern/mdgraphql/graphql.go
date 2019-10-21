@@ -8,6 +8,8 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 )
 
+var _ fw.Server = (*GraphGophers)(nil)
+
 type GraphGophers struct {
 	logger fw.Logger
 	server fw.Server
