@@ -3,7 +3,7 @@ Reusable framework for Go apps & command line tools
 
 ## Features
 
-`app` uses plugable abstractions for each system component, allowing you to swap out any part at any time you want without changing the rest of your application.
+`app` abstracts out each component of the framework, allowing you to swap out any part at any time you want without changing the rest of your application.
 
 Currently `app` provides the following components:
 
@@ -25,6 +25,8 @@ Currently `app` provides the following components:
 - Tracer
 - Terminal GUI
 
+`app` also includes convenient helpers to facilitate automated testing.
+
 ### To be supported
 
 - Service registry
@@ -32,11 +34,11 @@ Currently `app` provides the following components:
 
 ## Projects using `app`
 
-- [Short](https://github.com/byliuyang/short)
+- [Short](https://github.com/byliuyang/short): URL shortening service
   
   ![Short screenshots](example/short.png)
 
-- [Kgs](https://github.com/byliuyang/kgs)
+- [Kgs](https://github.com/byliuyang/kgs): Distributed Key Generation Service
 
 
 ### CLI
