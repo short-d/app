@@ -31,6 +31,7 @@ Currently `app` provides the following components:
 
 - Service registry
 - Message queue
+- Cache Driver
 
 ## Projects using `app`
 
