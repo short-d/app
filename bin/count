@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-git ls-files -- '*.go' | xargs wc -l
