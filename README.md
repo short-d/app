@@ -1,110 +1,124 @@
 # app
 Reusable framework for Go apps & command line tools
 
-## Examples
-### App
-### [Short](https://github.com/byliuyang/short)
-![Short screenshots](example/short.png)
+## Features
+
+`app` uses plugable abstractions for each system component, allowing you to swap out any part at any time you want without changing the rest of your application.
+
+Currently `app` provides the following components:
+
+- HTTP router
+- GraphQL
+- GRPC
+- Database
+  - Driver
+  - Schema & data migration
+- Environmental variables
+  - Easy retrieving
+  - Automatically load `.env` file when presents
+- JWT
+  - encoding
+  - decoding
+- TLS
+- Timer
+- Logger
+- Tracer
+- Terminal GUI
+
+### To be supported
+
+- Service registry
+- Message queue
+
+## Projects using `app`
+
+- [Short](https://github.com/byliuyang/short)
+  
+  ![Short screenshots](example/short.png)
+
+- [Kgs](https://github.com/byliuyang/kgs)
+
 
 ### CLI
 ![CLI screenshots](example/cli.png)
+
+### Building your own application
+
+Dependency injection is recommended to make your app easy to change and testable. [wire](https://github.com/google/wire) is a compile time dependency injection framework for Go apps. Here is the example usage:
+
 ```go
-package tool
+//+build wireinject
+var authSet = wire.NewSet(
+	provider.JwtGo,
 
-import (
-	"fmt"
-	"os"
-
-	"github.com/byliuyang/app/tool/cli"
-	"github.com/byliuyang/app/tool/terminal"
-	"github.com/byliuyang/app/tool/ui"
-	"github.com/byliuyang/eventbus"
-	"github.com/spf13/cobra"
+	wire.Value(provider.TokenValidDuration(oneDay)),
+	provider.Authenticator,
 )
 
-type SampleTool struct {
-	term            terminal.Terminal
-	exitChannel     eventbus.DataChannel
-	keyUpChannel    eventbus.DataChannel
-	keyDownChannel  eventbus.DataChannel
-	keyEnterChannel eventbus.DataChannel
-	cli             cli.CommandLineTool
-	rootCmd         *cobra.Command
-	radio           ui.Radio
-	languages       []string
+var observabilitySet = wire.NewSet(
+	mdlogger.NewLocal,
+	mdtracer.NewLocal,
+)
+
+func InjectGraphQlService(
+	name string,
+	sqlDB *sql.DB,
+	graphqlPath provider.GraphQlPath,
+	secret provider.ReCaptchaSecret,
+	jwtSecret provider.JwtSecret,
+) mdservice.Service {
+	wire.Build(
+		wire.Bind(new(fw.GraphQlAPI), new(graphql.Short)),
+		wire.Bind(new(url.Retriever), new(url.RetrieverPersist)),
+		wire.Bind(new(url.Creator), new(url.CreatorPersist)),
+		wire.Bind(new(repo.UserURLRelation), new(db.UserURLRelationSQL)),
+		wire.Bind(new(repo.URL), new(*db.URLSql)),
+
+		observabilitySet,
+		authSet,
+
+		mdservice.New,
+		provider.GraphGophers,
+		mdhttp.NewClient,
+		mdrequest.NewHTTP,
+		mdtimer.NewTimer,
+
+		db.NewURLSql,
+		db.NewUserURLRelationSQL,
+		keygen.NewInMemory,
+		url.NewRetrieverPersist,
+		url.NewCreatorPersist,
+		provider.ReCaptchaService,
+		requester.NewVerifier,
+		graphql.NewShort,
+	)
+	return mdservice.Service{}
 }
+```
 
-func (s SampleTool) Execute() {
-	if err := s.rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
+The following code will be generated after running `wire` command:
 
-func (s SampleTool) bindKeys() {
-	s.term.OnKeyPress(terminal.CtrlEName, s.exitChannel)
-	s.term.OnKeyPress(terminal.CursorUpName, s.keyUpChannel)
-	s.term.OnKeyPress(terminal.CursorDownName, s.keyDownChannel)
-	s.term.OnKeyPress(terminal.EnterName, s.keyEnterChannel)
-	fmt.Println("To exit, press Ctrl + E")
-	fmt.Println("To select an item, press Enter")
-}
-
-func (s SampleTool) handleEvents() {
-	s.cli.EnterMainLoop(func() {
-		select {
-		case <-s.exitChannel:
-			s.radio.Remove()
-			fmt.Println("Terminating process...")
-			s.cli.Exit()
-		case <-s.keyUpChannel:
-			s.radio.Prev()
-		case <-s.keyDownChannel:
-			s.radio.Next()
-		case <-s.keyEnterChannel:
-			s.radio.Remove()
-			selectedItem := s.languages[s.radio.SelectedIdx()]
-			fmt.Printf("Selected %s\n", selectedItem)
-			s.cli.Exit()
-		}
-	})
-}
-
-func NewSampleTool() SampleTool {
-	term := terminal.NewTerminal()
-	languages := []string{
-		"Go",
-		"Rust",
-		"C",
-		"C++",
-		"Java",
-		"Python",
-		"C#",
-		"JavaScript",
-		"TypeScript",
-		"Swift",
-		"Kotlin",
-	}
-
-	sampleTool := SampleTool{
-		term:            term,
-		cli:             cli.NewCommandLineTool(term),
-		exitChannel:     make(eventbus.DataChannel),
-		keyUpChannel:    make(eventbus.DataChannel),
-		keyDownChannel:  make(eventbus.DataChannel),
-		keyEnterChannel: make(eventbus.DataChannel),
-		radio:           ui.NewRadio(languages, 3, term),
-		languages:       languages,
-	}
-	rootCmd := &cobra.Command{
-		Run: func(cmd *cobra.Command, args []string) {
-			sampleTool.bindKeys()
-			sampleTool.radio.Render()
-			sampleTool.handleEvents()
-		},
-	}
-	sampleTool.rootCmd = rootCmd
-	return sampleTool
+```go
+func InjectGraphQlService(name string, sqlDB *sql.DB, graphqlPath provider.GraphQlPath, secret provider.ReCaptchaSecret, jwtSecret provider.JwtSecret) mdservice.Service {
+	logger := mdlogger.NewLocal()
+	tracer := mdtracer.NewLocal()
+	urlSql := db.NewURLSql(sqlDB)
+	retrieverPersist := url.NewRetrieverPersist(urlSql)
+	userURLRelationSQL := db.NewUserURLRelationSQL(sqlDB)
+	keyGenerator := keygen.NewInMemory()
+	creatorPersist := url.NewCreatorPersist(urlSql, userURLRelationSQL, keyGenerator)
+	client := mdhttp.NewClient()
+	httpRequest := mdrequest.NewHTTP(client)
+	reCaptcha := provider.ReCaptchaService(httpRequest, secret)
+	verifier := requester.NewVerifier(reCaptcha)
+	cryptoTokenizer := provider.JwtGo(jwtSecret)
+	timer := mdtimer.NewTimer()
+	tokenValidDuration := _wireTokenValidDurationValue
+	authenticator := provider.Authenticator(cryptoTokenizer, timer, tokenValidDuration)
+	short := graphql.NewShort(logger, tracer, retrieverPersist, creatorPersist, verifier, authenticator)
+	server := provider.GraphGophers(graphqlPath, logger, tracer, short)
+	service := mdservice.New(name, server, logger)
+	return service
 }
 ```
 
