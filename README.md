@@ -45,7 +45,9 @@ Currently `app` provides the following components:
 ### CLI
 ![CLI screenshots](example/cli.png)
 
-### Building your own application
+## Building your own application
+
+### Managming dependencies
 
 Dependency injection is recommended to make your app easy to change and testable. [wire](https://github.com/google/wire) is a compile time dependency injection framework for Go apps. Here is the example usage:
 
@@ -125,6 +127,326 @@ func InjectGraphQlService(name string, sqlDB *sql.DB, graphqlPath provider.Graph
 }
 ```
 
+### Adding GraphQL API
+
+```go
+package graphql
+
+import (
+	"short/app/adapter/graphql/resolver"
+	"short/app/usecase/auth"
+	"short/app/usecase/requester"
+	"short/app/usecase/url"
+
+	"github.com/byliuyang/app/fw"
+)
+
+var _ fw.GraphQlAPI = (*Short)(nil)
+
+type Short struct {
+	resolver *resolver.Resolver
+}
+
+func (t Short) GetSchema() string {
+	return schema
+}
+
+func (t Short) GetResolver() interface{} {
+	return t.resolver
+}
+
+func NewShort(
+	logger fw.Logger,
+	tracer fw.Tracer,
+	urlRetriever url.Retriever,
+	urlCreator url.Creator,
+	requesterVerifier requester.Verifier,
+	authenticator auth.Authenticator,
+) Short {
+	r := resolver.NewResolver(
+		logger,
+		tracer,
+		urlRetriever,
+		urlCreator,
+		requesterVerifier,
+		authenticator,
+	)
+	return Short{
+		resolver: &r,
+	}
+}
+
+```
+
+### Adding HTTP APIs
+
+```go
+func NewShort(
+	logger fw.Logger,
+	tracer fw.Tracer,
+	webFrontendURL string,
+	timer fw.Timer,
+	urlRetriever url.Retriever,
+	githubOAuth oauth.Github,
+	githubAPI github.API,
+	authenticator auth.Authenticator,
+	accountService service.Account,
+) []fw.Route {
+	githubSignIn := signin.NewOAuth(githubOAuth, githubAPI, accountService, authenticator)
+	frontendURL, err := netURL.Parse(webFrontendURL)
+	if err != nil {
+		panic(err)
+	}
+	return []fw.Route{
+		{
+			Method: "GET",
+			Path:   "/oauth/github/sign-in",
+			Handle: NewGithubSignIn(logger, tracer, githubOAuth, authenticator, webFrontendURL),
+		},
+		{
+			Method: "GET",
+			Path:   "/oauth/github/sign-in/callback",
+			Handle: NewGithubSignInCallback(logger, tracer, githubSignIn, *frontendURL),
+		},
+		{
+			Method: "GET",
+			Path:   "/r/:alias",
+			Handle: NewOriginalURL(logger, tracer, urlRetriever, timer, *frontendURL),
+		},
+	}
+}
+```
+
+### Creating GRPC APIs
+
+```go
+var _ fw.GRpcAPI = (*KgsAPI)(nil)
+
+type KgsAPI struct {
+	keyGenServer KeyGenServer
+}
+
+func (k KgsAPI) RegisterServers(server *grpc.Server) {
+	RegisterKeyGenServer(server, k.keyGenServer)
+}
+
+func NewKgsAPI(keyGenServer KeyGenServer) KgsAPI {
+	return KgsAPI{keyGenServer: keyGenServer}
+}
+```
+
+### Accesing enviromental variables
+
+```go
+env := dep.InitEnvironment()
+env.AutoLoadDotEnvFile()
+
+host := env.GetEnv("DB_HOST", "localhost")
+```
+
+### Accessing database
+
+#### Establish connection
+
+```go
+db, err := dbConnector.Connect(dbConfig)
+	if err != nil {
+		panic(err)
+	}
+```
+
+#### Migrate schema & data
+
+```go
+err = dbMigrationTool.Migrate(db, migrationRoot)
+if err != nil {
+	panic(err)
+}
+```
+
+```sql
+-- create_table.sql
+
+-- +migrate Up
+CREATE TABLE available_key (
+    key VARCHAR(10),
+    created_at TIMESTAMP WITH TIME ZONE
+);
+
+-- +migrate Down
+DROP TABLE available_key;
+```
+
+```-- +migrate Up``` and ```-- +migrate Down``` comments are required.
+
+### Builing command line tools
+
+#### Without GUI
+
+```go
+// main.go
+rootCmd := cmd.NewRootCmd(
+		dbConfig,
+		dbConnector,
+		dbMigrationTool,
+		securityPolicy,
+		gRpcAPIPort,
+	)
+cmd.Execute(rootCmd)
+```
+
+```go
+// cmd/cmd.go
+
+// NewRootCmd creates and initializes root command
+func NewRootCmd(
+	dbConfig fw.DBConfig,
+	dbConnector fw.DBConnector,
+	dbMigrationTool fw.DBMigrationTool,
+	securityPolicy fw.SecurityPolicy,
+	gRpcAPIPort int,
+) fw.Command {
+	var migrationRoot string
+
+	cmdFactory := dep.InitCommandFactory()
+	startCmd := cmdFactory.NewCommand(
+		fw.CommandConfig{
+			Usage: "start",
+			OnExecute: func(cmd *fw.Command, args []string) {
+				app.Start(
+					dbConfig,
+					migrationRoot,
+					dbConnector,
+					dbMigrationTool,
+					securityPolicy,
+					gRpcAPIPort,
+				)
+			},
+		},
+	)
+	startCmd.AddStringFlag(&migrationRoot, "migration", "app/adapter/migration", "migration migrations root directory")
+
+	rootCmd := cmdFactory.NewCommand(
+		fw.CommandConfig{
+			Usage:     "kgs",
+			OnExecute: func(cmd *fw.Command, args []string) {},
+		},
+	)
+	err := rootCmd.AddSubCommand(startCmd)
+	if err != nil {
+		panic(err)
+	}
+	return rootCmd
+}
+
+// Execute runs root command
+func Execute(rootCmd fw.Command) {
+	err := rootCmd.Execute()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+```
+
+#### With GUI
+
+```go
+// main.go
+func main() {
+	sampleTool := tool.NewSampleTool()
+	sampleTool.Execute()
+}
+```
+
+```go
+// tool/sample.go
+
+type SampleTool struct {
+	term            terminal.Terminal
+	exitChannel     eventbus.DataChannel
+	keyUpChannel    eventbus.DataChannel
+	keyDownChannel  eventbus.DataChannel
+	keyEnterChannel eventbus.DataChannel
+	cli             cli.CommandLineTool
+	rootCmd         *cobra.Command
+	radio           ui.Radio
+	languages       []string
+}
+
+func (s SampleTool) Execute() {
+	if err := s.rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func (s SampleTool) bindKeys() {
+	s.term.OnKeyPress(terminal.CtrlEName, s.exitChannel)
+	s.term.OnKeyPress(terminal.CursorUpName, s.keyUpChannel)
+	s.term.OnKeyPress(terminal.CursorDownName, s.keyDownChannel)
+	s.term.OnKeyPress(terminal.EnterName, s.keyEnterChannel)
+	fmt.Println("To exit, press Ctrl + E")
+	fmt.Println("To select an item, press Enter")
+}
+
+func (s SampleTool) handleEvents() {
+	s.cli.EnterMainLoop(func() {
+		select {
+		case <-s.exitChannel:
+			s.radio.Remove()
+			fmt.Println("Terminating process...")
+			s.cli.Exit()
+		case <-s.keyUpChannel:
+			s.radio.Prev()
+		case <-s.keyDownChannel:
+			s.radio.Next()
+		case <-s.keyEnterChannel:
+			s.radio.Remove()
+			selectedItem := s.languages[s.radio.SelectedIdx()]
+			fmt.Printf("Selected %s\n", selectedItem)
+			s.cli.Exit()
+		}
+	})
+}
+
+func NewSampleTool() SampleTool {
+	term := terminal.NewTerminal()
+	languages := []string{
+		"Go",
+		"Rust",
+		"C",
+		"C++",
+		"Java",
+		"Python",
+		"C#",
+		"JavaScript",
+		"TypeScript",
+		"Swift",
+		"Kotlin",
+	}
+
+	sampleTool := SampleTool{
+		term:            term,
+		cli:             cli.NewCommandLineTool(term),
+		exitChannel:     make(eventbus.DataChannel),
+		keyUpChannel:    make(eventbus.DataChannel),
+		keyDownChannel:  make(eventbus.DataChannel),
+		keyEnterChannel: make(eventbus.DataChannel),
+		radio:           ui.NewRadio(languages, 3, term),
+		languages:       languages,
+	}
+	rootCmd := &cobra.Command{
+		Run: func(cmd *cobra.Command, args []string) {
+			sampleTool.bindKeys()
+			sampleTool.radio.Render()
+			sampleTool.handleEvents()
+		},
+	}
+	sampleTool.rootCmd = rootCmd
+	return sampleTool
+}
+```
 
 ## Contributing
 
