@@ -47,7 +47,7 @@ Currently `app` provides the following components:
 
 ## Building your own application
 
-### Managming dependencies
+### Managing dependencies
 
 Dependency injection is recommended to make your app easy to change and testable. [wire](https://github.com/google/wire) is a compile time dependency injection framework for Go apps. Here is the example usage:
 
