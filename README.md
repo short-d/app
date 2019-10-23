@@ -250,9 +250,9 @@ host := env.GetEnv("DB_HOST", "localhost")
 
 ```go
 db, err := dbConnector.Connect(dbConfig)
-	if err != nil {
-		panic(err)
-	}
+if err != nil {
+	panic(err)
+}
 ```
 
 #### Migrate schema & data
@@ -286,12 +286,12 @@ DROP TABLE available_key;
 ```go
 // main.go
 rootCmd := cmd.NewRootCmd(
-		dbConfig,
-		dbConnector,
-		dbMigrationTool,
-		securityPolicy,
-		gRpcAPIPort,
-	)
+	dbConfig,
+	dbConnector,
+	dbMigrationTool,
+	securityPolicy,
+	gRpcAPIPort,
+)
 cmd.Execute(rootCmd)
 ```
 
