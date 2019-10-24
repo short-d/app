@@ -20,6 +20,7 @@ Currently `app` provides the following components:
   - encoding
   - decoding
 - TLS
+- Email API
 - Timer
 - Logger
 - Tracer
