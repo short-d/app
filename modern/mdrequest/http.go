@@ -10,6 +10,8 @@ import (
 	"github.com/byliuyang/app/fw"
 )
 
+var _ fw.HTTPRequest = (*HTTP)(nil)
+
 type HTTP struct {
 	client http.Client
 }
@@ -52,7 +54,7 @@ func (h HTTP) JSON(
 	return nil
 }
 
-func NewHTTP(client http.Client) fw.HTTPRequest {
+func NewHTTP(client http.Client) HTTP {
 	return HTTP{
 		client: client,
 	}
