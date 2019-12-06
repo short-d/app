@@ -15,5 +15,6 @@ type DBConnector interface {
 }
 
 type DBMigrationTool interface {
-	Migrate(db *sql.DB, migrationRoot string) error
+	MigrateUp(db *sql.DB, migrationRoot string) error
+	MigrateDown(db *sql.DB, migrationRoot string) error
 }
