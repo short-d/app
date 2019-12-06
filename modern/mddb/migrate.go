@@ -12,18 +12,22 @@ type PostgresMigrationTool struct {
 }
 
 func (p PostgresMigrationTool) MigrateUp(db *sql.DB, migrationRoot string) error {
-	migrations := &migrate.FileMigrationSource{
-		Dir: migrationRoot,
-	}
-	_, err := migrate.Exec(db, "postgres", migrations, migrate.Up)
-	return err
+	return p.migrate(db, migrationRoot, migrate.Up)
 }
 
 func (p PostgresMigrationTool) MigrateDown(db *sql.DB, migrationRoot string) error {
+	return p.migrate(db, migrationRoot, migrate.Down)
+}
+
+func (p PostgresMigrationTool) migrate(
+	db *sql.DB,
+	migrationRoot string,
+	migrateDirection migrate.MigrationDirection,
+) error {
 	migrations := &migrate.FileMigrationSource{
 		Dir: migrationRoot,
 	}
-	_, err := migrate.Exec(db, "postgres", migrations, migrate.Down)
+	_, err := migrate.Exec(db, "postgres", migrations, migrateDirection)
 	return err
 }
 
