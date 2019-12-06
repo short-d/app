@@ -25,12 +25,16 @@ func AccessTestDB(
 	dbMigrationRoot = filepath.Join(workDir, dbMigrationRoot)
 
 	db, err := dbConnector.Connect(dbConfig)
-	defer db.Close()
 	if err != nil {
 		panic(err)
 	}
 
+	defer db.Close()
+
 	err = resetDatabase(db, dbMigrationRoot, dbMigrationTool)
+	if err != nil {
+		panic(err)
+	}
 
 	err = dbMigrationTool.MigrateUp(db, dbMigrationRoot)
 	if err != nil {
