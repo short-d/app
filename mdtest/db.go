@@ -2,9 +2,10 @@ package mdtest
 
 import (
 	"database/sql"
-	"github.com/byliuyang/app/fw"
 	"os"
 	"path/filepath"
+
+	"github.com/byliuyang/app/fw"
 )
 
 type dbConsumer func(sqlDB *sql.DB)

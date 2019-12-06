@@ -2,6 +2,7 @@ package mddb
 
 import (
 	"database/sql"
+
 	"github.com/byliuyang/app/fw"
 	migrate "github.com/rubenv/sql-migrate"
 )
