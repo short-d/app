@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/byliuyang/app/fw"
 )
 
 type TransportHandleFunc func(req *http.Request) (*http.Response, error)
@@ -35,4 +37,20 @@ func JSONResponse(jsonObj map[string]interface{}) (*http.Response, error) {
 		Body:          body,
 		ContentLength: int64(len(jsonStr)),
 	}, nil
+}
+
+var _ fw.HTTPRequest = (*HTTPRequestFake)(nil)
+
+type HTTPRequestFake struct {
+	err error
+}
+
+func (h HTTPRequestFake) JSON(method string, url string, headers map[string]string, body string, v interface{}) error {
+	return h.err
+}
+
+func NewHTTPRequestFake(err error) HTTPRequestFake {
+	return HTTPRequestFake{
+		err: err,
+	}
 }
