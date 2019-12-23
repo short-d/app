@@ -42,11 +42,6 @@ func AccessTestDB(
 	}
 
 	consumer(db)
-
-	err = dbMigrationTool.MigrateDown(db, dbMigrationRoot)
-	if err != nil {
-		panic(err)
-	}
 }
 
 func resetDatabase(db *sql.DB, dbMigrationRoot string, dbMigrationTool fw.DBMigrationTool) error {
