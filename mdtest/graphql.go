@@ -8,7 +8,7 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 )
 
-func IsGraphQlAPIValid(api fw.GraphQlAPI) bool {
+func IsGraphQlAPIValid(api fw.GraphQLAPI) bool {
 	_, err := graphql.ParseSchema(api.GetSchema(), api.GetResolver())
 	return err == nil
 }
@@ -21,7 +21,7 @@ func (g GraphQLServerFake) URL() string {
 	return g.server.URL
 }
 
-func NewGraphQLServerFake(api fw.GraphQlAPI) GraphQLServerFake {
+func NewGraphQLServerFake(api fw.GraphQLAPI) GraphQLServerFake {
 	schema := graphql.MustParseSchema(api.GetSchema(), api.GetResolver())
 	relayHandler := relay.Handler{
 		Schema: schema,
