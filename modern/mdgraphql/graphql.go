@@ -1,10 +1,12 @@
 package mdgraphql
 
 import (
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/app/modern/mdhttp"
+	"net/http"
 
 	"github.com/graph-gophers/graphql-go"
+
+	"github.com/byliuyang/app/fw"
+	"github.com/byliuyang/app/modern/mdhttp"
 	"github.com/graph-gophers/graphql-go/relay"
 )
 
@@ -23,18 +25,35 @@ func (g GraphGophers) ListenAndServe(port int) error {
 	return g.server.ListenAndServe(port)
 }
 
-func NewGraphGophers(graphqlPath string, logger fw.Logger, tracer fw.Tracer, g fw.GraphQlAPI) fw.Server {
-	schema := graphql.MustParseSchema(g.GetSchema(), g.GetResolver())
-
-	relayHandler := relay.Handler{
-		Schema: schema,
-	}
+func NewGraphGophers(graphqlPath string, logger fw.Logger, tracer fw.Tracer, g fw.GraphQLAPI) fw.Server {
+	relayHandler := NewRelayHandler(g)
 
 	server := mdhttp.NewServer(logger, tracer)
-	server.HandleFunc(graphqlPath, &relayHandler)
+	server.HandleFunc(graphqlPath, relayHandler)
 
 	return GraphGophers{
 		logger: logger,
 		server: &server,
 	}
+}
+
+var _ http.Handler = (*RelayHandler)(nil)
+
+type RelayHandler struct {
+	handler relay.Handler
+}
+
+func (r RelayHandler) ServeHTTP(writer http.ResponseWriter, reader *http.Request) {
+	r.handler.ServeHTTP(writer, reader)
+}
+
+func NewRelayHandler(g fw.GraphQLAPI) RelayHandler {
+	schema := graphql.MustParseSchema(
+		g.GetSchema(),
+		g.GetResolver(),
+		graphql.UseStringDescriptions(),
+	)
+	return RelayHandler{handler: relay.Handler{
+		Schema: schema,
+	}}
 }
