@@ -3,7 +3,6 @@ package mdenv
 import (
 	"log"
 	"os"
-	"path"
 
 	"github.com/byliuyang/app/fw"
 	"github.com/joho/godotenv"
@@ -23,12 +22,7 @@ func (g GoDotEnv) GetEnv(key string, defaultValue string) string {
 }
 
 func (g GoDotEnv) AutoLoadDotEnvFile() {
-	workDir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = os.Stat(path.Join(workDir, ".env"))
+	_, err := os.Stat(".env")
 	if os.IsNotExist(err) {
 		return
 	}
