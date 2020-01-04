@@ -9,7 +9,7 @@ import (
 
 var _ fw.Logger = (*Local)(nil)
 
-const datetimeFormat  = "2006-01-02 15:04:05"
+const datetimeFormat = "2006-01-02 15:04:05"
 
 type Local struct {
 	prefix string
