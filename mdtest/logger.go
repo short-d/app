@@ -5,27 +5,52 @@ import "github.com/byliuyang/app/fw"
 var _ fw.Logger = (*LoggerFake)(nil)
 
 type LoggerFake struct {
-	Infos   []string
-	Errors  []error
-	Crashes []error
+	FatalMessages []string
+	Errors        []error
+	WarnMessages  []string
+	InfoMessages  []string
+	DebugMessages []string
+	TraceMessages []string
 }
 
-func (l *LoggerFake) Info(info string) {
-	l.Infos = append(l.Infos, info)
+func (l *LoggerFake) Fatal(message string) {
+	l.FatalMessages = append(l.FatalMessages, message)
 }
 
 func (l *LoggerFake) Error(err error) {
 	l.Errors = append(l.Errors, err)
 }
 
-func (l *LoggerFake) Crash(err error) {
-	l.Crashes = append(l.Crashes, err)
+func (l *LoggerFake) Warn(message string) {
+	l.WarnMessages = append(l.WarnMessages, message)
 }
 
-func NewLoggerFake() LoggerFake {
+func (l *LoggerFake) Info(message string) {
+	l.InfoMessages = append(l.InfoMessages, message)
+}
+
+func (l *LoggerFake) Debug(message string) {
+	l.DebugMessages = append(l.DebugMessages, message)
+}
+
+func (l *LoggerFake) Trace(message string) {
+	l.TraceMessages = append(l.TraceMessages, message)
+}
+
+func NewLoggerFake(
+	fatalMessages []string,
+	errors []error,
+	warnMessages []string,
+	infoMessages []string,
+	debugMessages []string,
+	traceMessages []string,
+) LoggerFake {
 	return LoggerFake{
-		Infos:   make([]string, 0),
-		Errors:  make([]error, 0),
-		Crashes: make([]error, 0),
+		FatalMessages: fatalMessages,
+		Errors:        errors,
+		WarnMessages:  warnMessages,
+		InfoMessages:  infoMessages,
+		DebugMessages: debugMessages,
+		TraceMessages: traceMessages,
 	}
 }
