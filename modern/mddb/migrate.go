@@ -3,8 +3,8 @@ package mddb
 import (
 	"database/sql"
 
-	"github.com/short-d/app/fw"
 	migrate "github.com/rubenv/sql-migrate"
+	"github.com/short-d/app/fw"
 )
 
 var _ fw.DBMigrationTool = (*PostgresMigrationTool)(nil)

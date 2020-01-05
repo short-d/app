@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/short-d/app/fw"
 	_ "github.com/lib/pq"
+	"github.com/short-d/app/fw"
 )
 
 var _ fw.DBConnector = (*PostgresConnector)(nil)
