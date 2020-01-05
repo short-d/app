@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/short-d/app/fw"
 	"github.com/joho/godotenv"
+	"github.com/short-d/app/fw"
 )
 
 var _ fw.Environment = (*GoDotEnv)(nil)

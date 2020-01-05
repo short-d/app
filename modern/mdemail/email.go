@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/short-d/app/fw"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/short-d/app/fw"
 )
 
 var _ fw.EmailSender = (*SendGrid)(nil)

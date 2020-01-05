@@ -5,9 +5,9 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 
+	"github.com/graph-gophers/graphql-go/relay"
 	"github.com/short-d/app/fw"
 	"github.com/short-d/app/modern/mdhttp"
-	"github.com/graph-gophers/graphql-go/relay"
 )
 
 var _ fw.Server = (*GraphGophers)(nil)

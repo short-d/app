@@ -3,9 +3,9 @@ package mdtest
 import (
 	"net/http/httptest"
 
-	"github.com/short-d/app/fw"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
+	"github.com/short-d/app/fw"
 )
 
 func IsGraphQlAPIValid(api fw.GraphQLAPI) bool {
