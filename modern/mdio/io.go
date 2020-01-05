@@ -12,29 +12,27 @@ import (
 var _ fw.StdIn = (*StdIn)(nil)
 
 type StdIn struct {
-	reader io.Reader
 }
 
 func (s StdIn) Read(p []byte) (n int, err error) {
-	return s.reader.Read(p)
+	return os.Stdin.Read(p)
 }
 
 func NewBuildInStdIn() StdIn {
-	return StdIn{os.Stdin}
+	return StdIn{}
 }
 
 var _ fw.StdOut = (*StdOut)(nil)
 
 type StdOut struct {
-	writer io.Writer
 }
 
 func (s StdOut) Write(p []byte) (n int, err error) {
-	return s.writer.Write(p)
+	return os.Stdout.Write(p)
 }
 
 func NewBuildInStdOut() StdOut {
-	return StdOut{writer: os.Stdout}
+	return StdOut{}
 }
 
 func Tap(r io.ReadCloser, fn func(text string)) io.ReadCloser {
