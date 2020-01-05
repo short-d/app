@@ -13,7 +13,7 @@ type BuildIn struct {
 }
 
 func (b BuildIn) Caller(numLevelsUp int) (fw.Caller, error) {
-	_, file, line, ok := runtime.Caller(numLevelsUp)
+	_, file, line, ok := runtime.Caller(numLevelsUp + 1)
 	if !ok {
 		return fw.Caller{}, errors.New("fail to obtain caller info")
 	}
