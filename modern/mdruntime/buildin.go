@@ -22,3 +22,7 @@ func (b BuildIn) Caller(numLevelsUp int) (fw.Caller, error) {
 		LineNumber:   line,
 	}, nil
 }
+
+func NewBuildIn() BuildIn {
+	return BuildIn{}
+}
