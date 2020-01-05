@@ -3,7 +3,7 @@ package mdtest
 import (
 	"net/http/httptest"
 
-	"github.com/byliuyang/app/fw"
+	"github.com/short-d/app/fw"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 )

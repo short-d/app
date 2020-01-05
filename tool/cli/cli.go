@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/byliuyang/app/tool/terminal"
+	"github.com/short-d/app/tool/terminal"
 )
 
 type CommandLineTool struct {

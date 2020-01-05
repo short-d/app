@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"path"
 
-	"github.com/byliuyang/app/fw"
+	"github.com/short-d/app/fw"
 )
 
 var _ fw.Template = (*HTML)(nil)

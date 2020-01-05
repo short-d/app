@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/byliuyang/app/tool/cli"
-	"github.com/byliuyang/app/tool/terminal"
-	"github.com/byliuyang/app/tool/ui"
-	"github.com/byliuyang/eventbus"
+	"github.com/short-d/app/tool/cli"
+	"github.com/short-d/app/tool/terminal"
+	"github.com/short-d/app/tool/ui"
+	"github.com/short-d/eventbus"
 	"github.com/spf13/cobra"
 )
 

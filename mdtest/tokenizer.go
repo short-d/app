@@ -3,7 +3,7 @@ package mdtest
 import (
 	"encoding/json"
 
-	"github.com/byliuyang/app/fw"
+	"github.com/short-d/app/fw"
 )
 
 var _ fw.CryptoTokenizer = (*CryptoTokenizerFake)(nil)
