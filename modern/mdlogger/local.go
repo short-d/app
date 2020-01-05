@@ -2,7 +2,6 @@ package mdlogger
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/byliuyang/app/fw"
 )
@@ -12,9 +11,11 @@ var _ fw.Logger = (*Local)(nil)
 const datetimeFormat = "2006-01-02 15:04:05"
 
 type Local struct {
-	prefix string
-	timer  fw.Timer
-	level  fw.LogLevel
+	prefix         string
+	level          fw.LogLevel
+	stdout         fw.StdOut
+	timer          fw.Timer
+	programRuntime fw.ProgramRuntime
 }
 
 func (local Local) Fatal(message string) {
@@ -28,7 +29,7 @@ func (local Local) Error(err error) {
 	if local.levelAboveError() {
 		return
 	}
-	local.log(fw.LogFatalName, fmt.Sprintf("%v", err))
+	local.log(fw.LogErrorName, fmt.Sprintf("%v", err))
 }
 
 func (local Local) Warn(message string) {
@@ -60,21 +61,33 @@ func (local Local) Trace(message string) {
 }
 
 func (local Local) log(level fw.LogLevelName, message string) {
-	now := local.timer.Now().UTC().Format(datetimeFormat)
-	_, file, line, ok := runtime.Caller(2)
-	if !ok {
-		fmt.Printf("[%s] [%s] %s %s\n", local.prefix, level, now, message)
+	now := local.now()
+	caller, err := local.programRuntime.Caller(2)
+	if err != nil {
+		_, _ = fmt.Fprintf(
+			local.stdout,
+			"[%s] [%s] %s %s\n",
+			local.prefix,
+			level,
+			now,
+			message,
+		)
 		return
 	}
-	fmt.Printf(
+	_, _ = fmt.Fprintf(
+		local.stdout,
 		"[%s] [%s] %s line %d at %s %s\n",
 		local.prefix,
 		level,
 		now,
-		line,
-		file,
+		caller.LineNumber,
+		caller.FullFilename,
 		message,
 	)
+}
+
+func (local Local) now() string {
+	return local.timer.Now().UTC().Format(datetimeFormat)
 }
 
 func (local Local) levelAboveFatal() bool {
@@ -116,10 +129,18 @@ func (local Local) levelAboveTrace() bool {
 	return local.level == fw.LogDebug
 }
 
-func NewLocal(prefix string, timer fw.Timer, level fw.LogLevel) Local {
+func NewLocal(
+	prefix string,
+	level fw.LogLevel,
+	stdout fw.StdOut,
+	timer fw.Timer,
+	programRuntime fw.ProgramRuntime,
+) Local {
 	return Local{
-		prefix: prefix,
-		timer:  timer,
-		level:  level,
+		prefix:         prefix,
+		level:          level,
+		stdout:         stdout,
+		timer:          timer,
+		programRuntime: programRuntime,
 	}
 }
