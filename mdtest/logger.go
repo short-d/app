@@ -37,20 +37,24 @@ func (l *LoggerFake) Trace(message string) {
 	l.TraceMessages = append(l.TraceMessages, message)
 }
 
+type FakeLoggerArgs struct {
+	FatalMessages []string
+	Errors        []error
+	WarnMessages  []string
+	InfoMessages  []string
+	DebugMessages []string
+	TraceMessages []string
+}
+
 func NewLoggerFake(
-	fatalMessages []string,
-	errors []error,
-	warnMessages []string,
-	infoMessages []string,
-	debugMessages []string,
-	traceMessages []string,
+	args FakeLoggerArgs,
 ) LoggerFake {
 	return LoggerFake{
-		FatalMessages: fatalMessages,
-		Errors:        errors,
-		WarnMessages:  warnMessages,
-		InfoMessages:  infoMessages,
-		DebugMessages: debugMessages,
-		TraceMessages: traceMessages,
+		FatalMessages: args.FatalMessages,
+		Errors:        args.Errors,
+		WarnMessages:  args.WarnMessages,
+		InfoMessages:  args.InfoMessages,
+		DebugMessages: args.DebugMessages,
+		TraceMessages: args.TraceMessages,
 	}
 }
