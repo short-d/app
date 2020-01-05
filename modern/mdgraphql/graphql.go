@@ -5,8 +5,8 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/app/modern/mdhttp"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdhttp"
 	"github.com/graph-gophers/graphql-go/relay"
 )
 

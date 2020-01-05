@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/byliuyang/app/fw"
-	"github.com/byliuyang/app/modern/mdio"
+	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdio"
 )
 
 type Server struct {

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/byliuyang/app/tool"
+import "github.com/short-d/app/tool"
 
 func main() {
 	sampleTool := tool.NewSampleTool()

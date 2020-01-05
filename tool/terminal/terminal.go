@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/byliuyang/eventbus"
+	"github.com/short-d/eventbus"
 )
 
 type colorCode int

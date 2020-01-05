@@ -3,7 +3,7 @@ package animation
 import (
 	"time"
 
-	"github.com/byliuyang/app/tool/ticker"
+	"github.com/short-d/app/tool/ticker"
 )
 
 type Animation struct {

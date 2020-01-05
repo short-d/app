@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 
-	"github.com/byliuyang/app/tool/terminal"
+	"github.com/short-d/app/tool/terminal"
 )
 
 type Radio struct {

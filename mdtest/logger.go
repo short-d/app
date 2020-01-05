@@ -1,6 +1,6 @@
 package mdtest
 
-import "github.com/byliuyang/app/fw"
+import "github.com/short-d/app/fw"
 
 var _ fw.Logger = (*LoggerFake)(nil)
 

@@ -3,7 +3,7 @@ package mdtimer
 import (
 	"time"
 
-	"github.com/byliuyang/app/fw"
+	"github.com/short-d/app/fw"
 )
 
 type Timer struct{}
