@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/short-d/app/modern/mdrequest"
-
 	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdrequest"
 )
 
 type TransportHandleFunc func(req *http.Request) (*http.Response, error)
