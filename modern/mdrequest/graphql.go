@@ -11,12 +11,14 @@ type graphQlResponse struct {
 	Data interface{} `json:"data"`
 }
 
-type GraphQl struct {
+var _ fw.GraphQlRequest = (*GraphQL)(nil)
+
+type GraphQL struct {
 	http fw.HTTPRequest
 	root string
 }
 
-func (g GraphQl) Query(query fw.GraphQlQuery, headers map[string]string, response interface{}) error {
+func (g GraphQL) Query(query fw.GraphQlQuery, headers map[string]string, response interface{}) error {
 	var res graphQlResponse
 
 	reqBuf, err := json.Marshal(query)
@@ -38,13 +40,13 @@ func (g GraphQl) Query(query fw.GraphQlQuery, headers map[string]string, respons
 	return err
 }
 
-func (g GraphQl) RootUrl(root string) fw.GraphQlRequest {
+func (g GraphQL) RootUrl(root string) fw.GraphQlRequest {
 	g.root = root
 	return g
 }
 
-func NewGraphQl(http fw.HTTPRequest) fw.GraphQlRequest {
-	return GraphQl{
+func NewGraphQL(http fw.HTTPRequest) GraphQL {
+	return GraphQL{
 		http: http,
 	}
 }

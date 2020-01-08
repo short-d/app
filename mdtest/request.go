@@ -7,22 +7,25 @@ import (
 	"strings"
 
 	"github.com/short-d/app/fw"
+	"github.com/short-d/app/modern/mdrequest"
 )
 
 type TransportHandleFunc func(req *http.Request) (*http.Response, error)
 
-type TransportMock struct {
+type TransportFake struct {
 	handle TransportHandleFunc
 }
 
-func (r TransportMock) RoundTrip(req *http.Request) (*http.Response, error) {
+func (r TransportFake) RoundTrip(req *http.Request) (*http.Response, error) {
 	return r.handle(req)
 }
 
-func NewTransportMock(handleFunc TransportHandleFunc) http.RoundTripper {
-	return TransportMock{
-		handle: handleFunc,
-	}
+func NewGraphQLRequestFake(handleFunc TransportHandleFunc) mdrequest.GraphQL {
+	client := http.Client{
+		Transport: TransportFake{
+			handle: handleFunc,
+		}}
+	return mdrequest.NewGraphQL(mdrequest.NewHTTP(client))
 }
 
 func JSONResponse(jsonObj map[string]interface{}) (*http.Response, error) {
