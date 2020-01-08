@@ -26,6 +26,7 @@ func (g GraphQL) Query(query fw.GraphQlQuery, headers map[string]string, respons
 		return err
 	}
 
+	headers["Content-Type"] = "application/json"
 	err = g.http.JSON(http.MethodPost, g.root, headers, string(reqBuf), &res)
 	if err != nil {
 		return err
