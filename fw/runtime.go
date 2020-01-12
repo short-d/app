@@ -6,5 +6,6 @@ type Caller struct {
 }
 
 type ProgramRuntime interface {
+	LockOSThread()
 	Caller(numLevelsUp int) (Caller, error)
 }
