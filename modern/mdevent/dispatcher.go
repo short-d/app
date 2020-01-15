@@ -1,8 +1,9 @@
 package mdevent
 
 import (
-	"github.com/short-d/app/fw"
 	"sync"
+
+	"github.com/short-d/app/fw"
 
 	"github.com/asaskevich/EventBus"
 )
@@ -29,7 +30,7 @@ func (d *EventDispatcher) Dispatch(event fw.Event) error {
 	return nil
 }
 
-func (d *EventDispatcher) Subscribe(eventName string, listener fw.Listener) error {
+func (d *EventDispatcher) Subscribe(listener fw.Listener) error {
 	d.lock.RLock()
 	defer d.lock.RUnlock()
 
@@ -37,10 +38,10 @@ func (d *EventDispatcher) Subscribe(eventName string, listener fw.Listener) erro
 		return fw.ErrDispatcherIsClosed
 	}
 
-	return d.eventBus.SubscribeAsync(eventName, listener.Handle, false)
+	return d.eventBus.SubscribeAsync(listener.GetSubscribedEvent(), listener.Handle, false)
 }
 
-func (d *EventDispatcher) Unsubscribe(eventName string, listener fw.Listener) error {
+func (d *EventDispatcher) Unsubscribe(listener fw.Listener) error {
 	d.lock.RLock()
 	defer d.lock.RUnlock()
 
@@ -48,7 +49,17 @@ func (d *EventDispatcher) Unsubscribe(eventName string, listener fw.Listener) er
 		return fw.ErrDispatcherIsClosed
 	}
 
-	return d.eventBus.Unsubscribe(eventName, listener.Handle)
+	return d.eventBus.Unsubscribe(listener.GetSubscribedEvent(), listener.Handle)
+}
+
+func (d *EventDispatcher) BindListeners(listeners []fw.Listener) error {
+	for _, listener := range listeners {
+		if err := d.Subscribe(listener); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (d *EventDispatcher) Close() error {

@@ -1,9 +1,10 @@
 package mdevent
 
 import (
-	"github.com/short-d/app/fw"
 	"sync/atomic"
 	"testing"
+
+	"github.com/short-d/app/fw"
 
 	"github.com/asaskevich/EventBus"
 
@@ -108,7 +109,7 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			eventDispatcher := NewEventDispatcher(EventBus.New())
 
-			err := fw.BindListeners(eventDispatcher, testCase.listeners)
+			err := eventDispatcher.BindListeners(testCase.listeners)
 			mdtest.Equal(t, nil, err)
 
 			for _, e := range testCase.events {
@@ -134,7 +135,7 @@ func TestEventDispatcher_Close(t *testing.T) {
 	eventDispatcher := NewEventDispatcher(EventBus.New())
 	listener := &fakeListener{name: ev.GetName()}
 
-	_ = fw.BindListeners(eventDispatcher, []fw.Listener{listener})
+	_ = eventDispatcher.BindListeners([]fw.Listener{listener})
 
 	err := eventDispatcher.Dispatch(ev)
 	mdtest.Equal(t, nil, err)

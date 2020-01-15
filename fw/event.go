@@ -1,6 +1,9 @@
 package fw
 
-import "errors"
+import (
+	"errors"
+	"io"
+)
 
 // ErrDispatcherIsClosed represents that there is no way to perform manipulations with event dispatcher
 var ErrDispatcherIsClosed = errors.New("failed to perform the operation, the dispatcher is closed")
@@ -8,6 +11,7 @@ var ErrDispatcherIsClosed = errors.New("failed to perform the operation, the dis
 type Dispatcher interface {
 	Emitter
 	Subscriber
+	io.Closer
 }
 
 // Emitter propagates the given event to the list of corresponding listeners
@@ -33,18 +37,9 @@ type Event interface {
 // Subscriber provides the ability to subscribe a listener to an event
 type Subscriber interface {
 	// Subscribe binds the given listener to events with the provided event name
-	Subscribe(eventName string, listener Listener) error
+	Subscribe(listener Listener) error
 	// Unsubscribe unbinds the given listener from the provided event name
-	Unsubscribe(eventName string, listener Listener) error
-}
-
-// BindListeners is a helper function registers the list of listeners to the given event dispatcher
-func BindListeners(subscriber Subscriber, list []Listener) error {
-	for _, listener := range list {
-		if err := subscriber.Subscribe(listener.GetSubscribedEvent(), listener); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	Unsubscribe(listener Listener) error
+	// BindListeners registers the list of listeners
+	BindListeners(listeners []Listener) error
 }
