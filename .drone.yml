@@ -1,0 +1,38 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: test app
+    image: docker
+    commands:
+      - docker build -t app-test -f Dockerfile-test .
+      - docker run app-test
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      branch:
+        - master
+      event:
+        - pull_request
+
+  - name: report code coverage
+    image: docker
+    environment:
+      CODECOV_TOKEN:
+        from_secret: CODECOV_TOKEN
+    commands:
+      - docker build -t app-report-coverage --build-arg CODECOV_TOKEN=$CODECOV_TOKEN -f Dockerfile-coverage .
+      - docker run app-report-coverage
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      branch:
+        - master
+      event:
+        - pull_request
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
