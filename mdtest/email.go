@@ -15,7 +15,6 @@ func (e *EmailSenderFake) SendEmail(email fw.Email) error {
 	}
 
 	e.sentEmail = email
-
 	return nil
 }
 
