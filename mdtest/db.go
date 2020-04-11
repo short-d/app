@@ -31,24 +31,15 @@ func AccessTestDB(
 
 	defer db.Close()
 
-	err = resetDatabase(db, dbMigrationRoot, dbMigrationTool)
-	if err != nil {
-		panic(err)
-	}
-
 	err = dbMigrationTool.MigrateUp(db, dbMigrationRoot)
 	if err != nil {
 		panic(err)
 	}
 
 	consumer(db)
-}
 
-func resetDatabase(db *sql.DB, dbMigrationRoot string, dbMigrationTool fw.DBMigrationTool) error {
-	err := dbMigrationTool.MigrateUp(db, dbMigrationRoot)
+	err = dbMigrationTool.MigrateDown(db, dbMigrationRoot)
 	if err != nil {
-		return err
+		panic(err)
 	}
-
-	return dbMigrationTool.MigrateDown(db, dbMigrationRoot)
 }
