@@ -9,6 +9,7 @@ import (
 
 var _ fw.GeoLocation = (*IPStack)(nil)
 
+// Here is IPStack's documentation: https://ipstack.com/documentation
 const baseURL = "http://api.ipstack.com"
 
 type jsonLanguage struct {
@@ -26,7 +27,7 @@ type jsonLocation struct {
 type jsonTimeZone struct {
 	ID               string `json:"id"`
 	Code             string `json:"code"`
-	IsDaylightSaving bool
+	IsDaylightSaving bool   `json:"is_daylight_saving"`
 }
 
 type jsonCurrency struct {
