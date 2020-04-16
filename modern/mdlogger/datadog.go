@@ -40,6 +40,8 @@ func (d DataDogEntryRepo) createLogEntry(
 	_ = d.httpRequest.JSON(http.MethodPost, dataDogLoggingApi, headers, string(jsonBody), &res)
 }
 
+// getSeverity converts internal log severity to DataDog's log status.
+// Here is DataDog's documentation: https://docs.datadoghq.com/logs/processing/processors/?tab=ui#log-status-remapper
 func getSeverity(level fw.LogLevel) string {
 	switch level {
 	case fw.LogFatal:
