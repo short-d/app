@@ -10,10 +10,12 @@ import (
 )
 
 type entry struct {
-	level     fw.LogLevelName
-	prefix    string
-	message   string
-	timestamp string
+	level    fw.LogLevel
+	prefix   string
+	line     int
+	filename string
+	message  string
+	date     string
 }
 
 var _ EntryRepository = (*FakeEntryRepo)(nil)
@@ -22,12 +24,21 @@ type FakeEntryRepo struct {
 	entries []entry
 }
 
-func (f *FakeEntryRepo) createLogEntry(level fw.LogLevelName, prefix string, message string, timestamp time.Time) {
+func (f FakeEntryRepo) createLogEntry(
+	level fw.LogLevel,
+	prefix string,
+	line int,
+	filename string,
+	message string,
+	date time.Time,
+) {
 	f.entries = append(f.entries, entry{
-		level:     level,
-		prefix:    prefix,
-		message:   message,
-		timestamp: timestamp.Format(time.RFC3339),
+		level:    level,
+		prefix:   prefix,
+		line:     line,
+		filename: filename,
+		message:  message,
+		date:     date.Format(time.RFC3339),
 	})
 }
 
@@ -61,16 +72,16 @@ func TestLogger_Fatal(t *testing.T) {
 			}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 1",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 2",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -83,10 +94,10 @@ func TestLogger_Fatal(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -99,10 +110,10 @@ func TestLogger_Fatal(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -115,10 +126,10 @@ func TestLogger_Fatal(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -131,10 +142,10 @@ func TestLogger_Fatal(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -147,10 +158,10 @@ func TestLogger_Fatal(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogFatalName,
+					level:     fw.LogFatal,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -217,16 +228,16 @@ func TestLogger_Error(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogErrorName,
+					level:     fw.LogError,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 1",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 				{
-					level:     fw.LogErrorName,
+					level:     fw.LogError,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 2",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -239,10 +250,10 @@ func TestLogger_Error(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogErrorName,
+					level:     fw.LogError,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -255,10 +266,10 @@ func TestLogger_Error(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogErrorName,
+					level:     fw.LogError,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -271,10 +282,10 @@ func TestLogger_Error(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogErrorName,
+					level:     fw.LogError,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -287,10 +298,10 @@ func TestLogger_Error(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogErrorName,
+					level:     fw.LogError,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -367,16 +378,16 @@ func TestLogger_Warn(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogWarnName,
+					level:     fw.LogWarn,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 1",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 				{
-					level:     fw.LogWarnName,
+					level:     fw.LogWarn,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 2",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -389,10 +400,10 @@ func TestLogger_Warn(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogWarnName,
+					level:     fw.LogWarn,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -405,10 +416,10 @@ func TestLogger_Warn(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogWarnName,
+					level:     fw.LogWarn,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -421,10 +432,10 @@ func TestLogger_Warn(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogWarnName,
+					level:     fw.LogWarn,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -509,16 +520,16 @@ func TestLogger_Info(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogInfoName,
+					level:     fw.LogInfo,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 1",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 				{
-					level:     fw.LogInfoName,
+					level:     fw.LogInfo,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 2",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -531,10 +542,10 @@ func TestLogger_Info(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogInfoName,
+					level:     fw.LogInfo,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -547,10 +558,10 @@ func TestLogger_Info(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogInfoName,
+					level:     fw.LogInfo,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -643,16 +654,16 @@ func TestLogger_Debug(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogDebugName,
+					level:     fw.LogDebug,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 1",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 				{
-					level:     fw.LogDebugName,
+					level:     fw.LogDebug,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 2",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -665,10 +676,10 @@ func TestLogger_Debug(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogDebugName,
+					level:     fw.LogDebug,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
@@ -769,16 +780,16 @@ func TestLogger_Trace(t *testing.T) {
 			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []entry{
 				{
-					level:     fw.LogTraceName,
+					level:     fw.LogTrace,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 1",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 				{
-					level:     fw.LogTraceName,
+					level:     fw.LogTrace,
 					prefix:    "Prefix",
 					message:   "line 10 at github.com/short-d/app/test.go message 2",
-					timestamp: "2020-01-04T10:20:04Z",
+					date: "2020-01-04T10:20:04Z",
 				},
 			},
 		},
