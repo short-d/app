@@ -40,6 +40,7 @@ func (d DataDogEntryRepo) createLogEntry(
 	_ = d.httpRequest.JSON(http.MethodPost, dataDogLoggingApi, headers, string(jsonBody), &res)
 }
 
+// DataDog log status remapper https://docs.datadoghq.com/logs/processing/processors/?tab=ui#log-status-remapper
 func getSeverity(level fw.LogLevel) string {
 	switch level {
 	case fw.LogFatal:
@@ -80,11 +81,12 @@ func (d DataDogEntryRepo) requestBody(
 }
 
 func (d DataDogEntryRepo) dataDogTags(tags map[string]string) string {
-	var tagsList []string
-
+	tagsList := make([]string, len(tags))
+	i := 0
 	for key, val := range tags {
 		pair := fmt.Sprintf("%s:%s", key, val)
-		tagsList = append(tagsList, pair)
+		tagsList[i] = pair
+		i++
 	}
 	return strings.Join(tagsList, ",")
 }
