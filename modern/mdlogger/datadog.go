@@ -83,6 +83,7 @@ func (d DataDogEntryRepo) requestBody(
 
 func (d DataDogEntryRepo) dataDogTags(tags map[string]string) string {
 	var tagsList []string
+
 	for key, val := range tags {
 		pair := fmt.Sprintf("%s:%s", key, val)
 		tagsList = append(tagsList, pair)
