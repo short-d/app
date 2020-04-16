@@ -24,8 +24,5 @@ func (p ProgramRuntimeFake) LockOSThread() {
 }
 
 func NewProgramRuntimeFake(callers []fw.Caller) (ProgramRuntimeFake, error) {
-	if callers == nil {
-		return ProgramRuntimeFake{}, errors.New("no caller")
-	}
 	return ProgramRuntimeFake{callers: callers}, nil
 }

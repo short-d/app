@@ -2,122 +2,72 @@ package mdlogger
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/short-d/app/fw"
 )
 
-var _ fw.Logger = (*Local)(nil)
+var _ EntryRepository = (*Local)(nil)
 
 const datetimeFormat = "2006-01-02 15:04:05"
 
-type priority int
+type logLevelName = string
 
-var priorities = map[fw.LogLevel]priority{
-	fw.LogOff:   0,
-	fw.LogFatal: 1,
-	fw.LogError: 2,
-	fw.LogWarn:  3,
-	fw.LogInfo:  4,
-	fw.LogDebug: 5,
-	fw.LogTrace: 6,
-}
+const (
+	logFatalName logLevelName = "Fatal"
+	logErrorName logLevelName = "Error"
+	logWarnName  logLevelName = "Warn"
+	logInfoName  logLevelName = "Info"
+	logDebugName logLevelName = "Debug"
+	logTraceName logLevelName = "Trace"
+)
 
 type Local struct {
-	prefix         string
-	level          fw.LogLevel
-	stdout         fw.StdOut
-	timer          fw.Timer
-	programRuntime fw.ProgramRuntime
+	stdout fw.StdOut
 }
 
-func (local Local) Fatal(message string) {
-	if local.levelAbove(fw.LogFatal) {
-		return
-	}
-	local.log(fw.LogFatalName, message)
-}
-
-func (local Local) Error(err error) {
-	if local.levelAbove(fw.LogError) {
-		return
-	}
-	local.log(fw.LogErrorName, fmt.Sprintf("%v", err))
-}
-
-func (local Local) Warn(message string) {
-	if local.levelAbove(fw.LogWarn) {
-		return
-	}
-	local.log(fw.LogWarnName, message)
-}
-
-func (local Local) Info(message string) {
-	if local.levelAbove(fw.LogInfo) {
-		return
-	}
-	local.log(fw.LogInfoName, message)
-}
-
-func (local Local) Debug(message string) {
-	if local.levelAbove(fw.LogDebug) {
-		return
-	}
-	local.log(fw.LogDebugName, message)
-}
-
-func (local Local) Trace(message string) {
-	if local.levelAbove(fw.LogTrace) {
-		return
-	}
-	local.log(fw.LogTraceName, message)
-}
-
-func (local Local) log(level fw.LogLevelName, message string) {
-	now := local.now()
-	caller, err := local.programRuntime.Caller(2)
-	if err != nil {
-		_, _ = fmt.Fprintf(
-			local.stdout,
-			"[%s] [%s] %s %s\n",
-			local.prefix,
-			level,
-			now,
-			message,
-		)
-		return
-	}
+func (local Local) createLogEntry(
+	level fw.LogLevel,
+	prefix string,
+	line int,
+	filename string,
+	message string,
+	date time.Time,
+) {
+	timeStr := date.Format(datetimeFormat)
+	logLevelName := local.getLogLevelName(level)
+	message = fmt.Sprintf("line %d at %s %s", line, filename, message)
 	_, _ = fmt.Fprintf(
 		local.stdout,
-		"[%s] [%s] %s line %d at %s %s\n",
-		local.prefix,
-		level,
-		now,
-		caller.LineNumber,
-		caller.FullFilename,
+		"[%s] [%s] %s %s\n",
+		prefix,
+		logLevelName,
+		timeStr,
 		message,
 	)
 }
 
-func (local Local) now() string {
-	return local.timer.Now().UTC().Format(datetimeFormat)
+func (local Local) getLogLevelName(level fw.LogLevel) string {
+	switch level {
+	case fw.LogFatal:
+		return logFatalName
+	case fw.LogError:
+		return logErrorName
+	case fw.LogWarn:
+		return logWarnName
+	case fw.LogInfo:
+		return logInfoName
+	case fw.LogDebug:
+		return logDebugName
+	case fw.LogTrace:
+		return logTraceName
+	default:
+		return "Should not happen"
+	}
 }
 
-func (local Local) levelAbove(logLevel fw.LogLevel) bool {
-	return priorities[local.level] < priorities[logLevel]
-}
-
-func NewLocal(
-	prefix string,
-	level fw.LogLevel,
-	stdout fw.StdOut,
-	timer fw.Timer,
-	programRuntime fw.ProgramRuntime,
-) Local {
+func NewLocal(stdout fw.StdOut) Local {
 	return Local{
-		prefix:         prefix,
-		level:          level,
-		stdout:         stdout,
-		timer:          timer,
-		programRuntime: programRuntime,
+		stdout: stdout,
 	}
 }
