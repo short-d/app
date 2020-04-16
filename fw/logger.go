@@ -12,17 +12,6 @@ const (
 	LogOff
 )
 
-type LogLevelName string
-
-const (
-	LogFatalName LogLevelName = "Fatal"
-	LogErrorName LogLevelName = "Error"
-	LogWarnName  LogLevelName = "Warn"
-	LogInfoName  LogLevelName = "Info"
-	LogDebugName LogLevelName = "Debug"
-	LogTraceName LogLevelName = "Trace"
-)
-
 type Logger interface {
 	Fatal(message string)
 	Error(err error)
