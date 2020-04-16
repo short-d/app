@@ -81,12 +81,10 @@ func (d DataDogEntryRepo) requestBody(
 }
 
 func (d DataDogEntryRepo) dataDogTags(tags map[string]string) string {
-	tagsList := make([]string, len(tags))
-	i := 0
+	var tagsList []string
 	for key, val := range tags {
 		pair := fmt.Sprintf("%s:%s", key, val)
-		tagsList[i] = pair
-		i++
+		tagsList = append(tagsList, pair)
 	}
 	return strings.Join(tagsList, ",")
 }
