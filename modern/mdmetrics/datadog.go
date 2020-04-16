@@ -68,7 +68,6 @@ func (d DataDog) recordPoint(
 	if err != nil {
 		return
 	}
-	fmt.Printf("%v %v", headers, body)
 	var res = make(map[string]interface{})
 	_ = d.httpRequest.JSON(http.MethodPost, dataDogMetricsApi, headers, string(jsonBody), &res)
 }
