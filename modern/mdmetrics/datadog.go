@@ -19,8 +19,8 @@ type metricType string
 
 const (
 	count metricType = "count"
-	rate             = "rate"
-	gauge            = "gauge"
+	rate  metricType = "rate"
+	gauge metricType = "gauge"
 )
 
 type metricPoints struct {
