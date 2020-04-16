@@ -55,6 +55,7 @@ func (s Segment) Track(eventName string, properties map[string]string, userID st
 	}
 	props.Set("feature-toggle", ctx.FeatureToggleID)
 	props.Set("experiment-bucket", ctx.ExperimentBucket)
+	trackGeoLocation(ctx, &props)
 
 	now := s.timer.Now()
 	s.enqueue(analytics.Track{
@@ -63,6 +64,22 @@ func (s Segment) Track(eventName string, properties map[string]string, userID st
 		Properties: props,
 		Timestamp:  now,
 	})
+}
+
+func trackGeoLocation(ctx fw.ExecutionContext, props *analytics.Properties) {
+	props.Set("continent-code", ctx.Location.Continent.Code)
+	props.Set("continent-name", ctx.Location.Continent.Name)
+	props.Set("country-code", ctx.Location.Country.Code)
+	props.Set("country-name", ctx.Location.Country.Name)
+	props.Set("region-code", ctx.Location.Region.Code)
+	props.Set("region-name", ctx.Location.Region.Name)
+	props.Set("currency-code", ctx.Location.Currency.Code)
+	props.Set("currency-name", ctx.Location.Currency.Name)
+
+	if ctx.Location.IsEuropeanUnion {
+		return
+	}
+	props.Set("city", ctx.Location.City)
 }
 
 func (s Segment) enqueue(message analytics.Message) {
