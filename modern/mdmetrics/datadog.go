@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/short-d/app/fw"
@@ -97,20 +96,20 @@ func (d DataDog) requestBody(
 						point,
 					},
 				},
-				Tags: []string{d.dataDogTags(tags)},
+				Tags: d.dataDogTags(tags),
 			},
 		},
 	}
 }
 
-func (d DataDog) dataDogTags(tags map[string]string) string {
+func (d DataDog) dataDogTags(tags map[string]string) []string {
 	var tagsList []string
 
 	for key, val := range tags {
 		pair := fmt.Sprintf("%s:%s", key, val)
 		tagsList = append(tagsList, pair)
 	}
-	return strings.Join(tagsList, ",")
+	return tagsList
 }
 
 func (d DataDog) authHeaders() map[string]string {
