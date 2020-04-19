@@ -95,5 +95,6 @@ func NewSegment(segmentWriteKey string, timer fw.Timer, logger fw.Logger) Segmen
 	return Segment{
 		client: client,
 		timer:  timer,
+		logger: logger,
 	}
 }
