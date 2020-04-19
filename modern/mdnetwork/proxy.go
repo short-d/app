@@ -11,7 +11,11 @@ var _ fw.Network = (*Proxy)(nil)
 type Proxy struct {
 }
 
-func (p Proxy) FromHTTP(request http.Request) fw.Connection {
+func (p Proxy) FromHTTP(request *http.Request) fw.Connection {
+	if request == nil {
+		return fw.Connection{}
+	}
+
 	clientIP := request.Header.Get("X-Forwarded-For")
 	host := request.Header.Get("X-Forwarded-Host")
 	proto := request.Header.Get("X-Forwarded-Proto")

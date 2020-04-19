@@ -9,5 +9,5 @@ type Connection struct {
 }
 
 type Network interface {
-	FromHTTP(request http.Request) Connection
+	FromHTTP(request *http.Request) Connection
 }
