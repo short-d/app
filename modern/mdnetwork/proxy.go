@@ -11,7 +11,9 @@ var _ fw.Network = (*Proxy)(nil)
 type Proxy struct {
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling
 func (p Proxy) FromHTTP(request *http.Request) fw.Connection {
+
 	if request == nil {
 		return fw.Connection{}
 	}
