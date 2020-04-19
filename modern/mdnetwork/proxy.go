@@ -13,7 +13,6 @@ type Proxy struct {
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling
 func (p Proxy) FromHTTP(request *http.Request) fw.Connection {
-
 	if request == nil {
 		return fw.Connection{}
 	}
@@ -26,4 +25,8 @@ func (p Proxy) FromHTTP(request *http.Request) fw.Connection {
 		RequestedHost: host,
 		Protocol:      proto,
 	}
+}
+
+func NewProxy() Proxy {
+	return Proxy{}
 }
