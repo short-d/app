@@ -1,4 +1,4 @@
-package envconfig
+package mdnenvconfig
 
 import (
 	"errors"
@@ -7,15 +7,13 @@ import (
 	"strconv"
 
 	"github.com/short-d/app/fw"
+	"github.com/short-d/app/unit"
 )
 
 var _ fw.EnvConfig = (*EnvConfig)(nil)
 
 // EnvConfig parses configuration from environmental variables.
 type EnvConfig struct {
-	parseBool   func(newValue string, typeOfValue reflect.Type) (bool, error)
-	parseInt    func(newValue string, typeOfValue reflect.Type) (int64, error)
-	parseString func(newValue string, typeOfValue reflect.Type) (string, error)
 	environment fw.Environment
 }
 
@@ -47,7 +45,7 @@ func (e EnvConfig) ParseConfigFromEnv(config interface{}) error {
 		}
 		defaultVal := field.Tag.Get("default")
 		envVal := e.environment.GetEnv(envName, defaultVal)
-		err := e.setFieldValue(field, elem.Field(idx), envVal)
+		err := setFieldValue(field, elem.Field(idx), envVal)
 		if err != nil {
 			return err
 		}
@@ -55,9 +53,19 @@ func (e EnvConfig) ParseConfigFromEnv(config interface{}) error {
 	return nil
 }
 
-func (e EnvConfig) setFieldValue(field reflect.StructField, fieldValue reflect.Value, newValue string) error {
+func setFieldValue(field reflect.StructField, fieldValue reflect.Value, newValue string) error {
 	kind := field.Type.Kind()
 	switch kind {
+	case reflect.String:
+		fieldValue.SetString(newValue)
+		return nil
+	case reflect.Int, reflect.Int64:
+		num, err := parseInt(newValue, field.Type)
+		if err != nil {
+			return err
+		}
+		fieldValue.SetInt(num)
+		return nil
 	case reflect.Bool:
 		boolean, err := strconv.ParseBool(newValue)
 		if err != nil {
@@ -65,32 +73,29 @@ func (e EnvConfig) setFieldValue(field reflect.StructField, fieldValue reflect.V
 		}
 		fieldValue.SetBool(boolean)
 		return nil
-	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint,
-		reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
-		num, err := e.parseInt(newValue, field.Type)
-		if err != nil {
-			return err
-		}
-		fieldValue.SetInt(num)
-		return nil
-	case reflect.String:
-		str, err := e.parseString(newValue, field.Type)
-		if err != nil {
-			return err
-		}
-		fieldValue.SetString(str)
-		return nil
 	default:
 		return fmt.Errorf("unexpected field type: %s", kind)
 	}
 }
 
+func parseInt(newValue string, typeOfValue reflect.Type) (int64, error) {
+	pkg, kind := typeOfValue.PkgPath(), typeOfValue.Name()
+	switch {
+	case kind == "int":
+		num, err := strconv.Atoi(newValue)
+		return int64(num), err
+	case kind == "Duration":
+		if pkg != "time" {
+			return 0, errors.New("unknown package or kind")
+		}
+		duration, err := unit.ParseDuration(newValue)
+		return int64(duration), err
+	default:
+		return 0, errors.New("unknown package or kind")
+	}
+}
+
 // NewEnvConfig creates EnvConfig.
-func NewEnvConfig(
-	parseBool func(newValue string, typeOfValue reflect.Type) (bool, error),
-	parseInt func(newValue string, typeOfValue reflect.Type) (int64, error),
-	parseString func(newValue string, typeOfValue reflect.Type) (string, error),
-	environment fw.Environment,
-) EnvConfig {
-	return EnvConfig{parseBool: parseBool, parseInt: parseInt, parseString: parseString, environment: environment}
+func NewEnvConfig(environment fw.Environment) EnvConfig {
+	return EnvConfig{environment: environment}
 }
