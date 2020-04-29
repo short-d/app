@@ -1,4 +1,4 @@
-package mdnenvconfig
+package mdenvconfig
 
 import (
 	"testing"
