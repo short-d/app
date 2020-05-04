@@ -1,14 +1,12 @@
-package mdlogger
+package logger
 
 import (
 	"time"
-
-	"github.com/short-d/app/fw"
 )
 
 type EntryRepository interface {
 	createLogEntry(
-		level fw.LogLevel,
+		level LogLevel,
 		prefix string,
 		line int,
 		filename string,

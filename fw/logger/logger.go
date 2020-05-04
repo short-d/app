@@ -1,4 +1,4 @@
-package mdlogger
+package logger
 
 import (
 	"fmt"
@@ -6,71 +6,81 @@ import (
 	"github.com/short-d/app/fw"
 )
 
-var _ fw.Logger = (*Logger)(nil)
+type LogLevel int
+
+const (
+	LogFatal LogLevel = iota
+	LogError
+	LogWarn
+	LogInfo
+	LogDebug
+	LogTrace
+	LogOff
+)
 
 type priority int
 
-var priorities = map[fw.LogLevel]priority{
-	fw.LogOff:   0,
-	fw.LogFatal: 1,
-	fw.LogError: 2,
-	fw.LogWarn:  3,
-	fw.LogInfo:  4,
-	fw.LogDebug: 5,
-	fw.LogTrace: 6,
+var priorities = map[LogLevel]priority{
+	LogOff:   0,
+	LogFatal: 1,
+	LogError: 2,
+	LogWarn:  3,
+	LogInfo:  4,
+	LogDebug: 5,
+	LogTrace: 6,
 }
 
 type Logger struct {
 	prefix         string
-	level          fw.LogLevel
+	level          LogLevel
 	timer          fw.Timer
 	programRuntime fw.ProgramRuntime
 	entryRepo      EntryRepository
 }
 
 func (l Logger) Fatal(message string) {
-	if l.levelAbove(fw.LogFatal) {
+	if l.levelAbove(LogFatal) {
 		return
 	}
-	l.log(fw.LogFatal, message)
+	l.log(LogFatal, message)
 }
 
 func (l Logger) Error(err error) {
-	if l.levelAbove(fw.LogError) {
+	if l.levelAbove(LogError) {
 		return
 	}
-	l.log(fw.LogError, fmt.Sprintf("%v", err))
+	l.log(LogError, fmt.Sprintf("%v", err))
 }
 
 func (l Logger) Warn(message string) {
-	if l.levelAbove(fw.LogWarn) {
+	if l.levelAbove(LogWarn) {
 		return
 	}
-	l.log(fw.LogWarn, message)
+	l.log(LogWarn, message)
 }
 
 func (l Logger) Info(message string) {
-	if l.levelAbove(fw.LogInfo) {
+	if l.levelAbove(LogInfo) {
 		return
 	}
-	l.log(fw.LogInfo, message)
+	l.log(LogInfo, message)
 }
 
 func (l Logger) Debug(message string) {
-	if l.levelAbove(fw.LogDebug) {
+	if l.levelAbove(LogDebug) {
 		return
 	}
-	l.log(fw.LogDebug, message)
+	l.log(LogDebug, message)
 }
 
 func (l Logger) Trace(message string) {
-	if l.levelAbove(fw.LogTrace) {
+	if l.levelAbove(LogTrace) {
 		return
 	}
-	l.log(fw.LogTrace, message)
+	l.log(LogTrace, message)
 }
 
-func (l Logger) log(level fw.LogLevel, message string) {
+func (l Logger) log(level LogLevel, message string) {
 	now := l.timer.Now().UTC()
 	caller, err := l.programRuntime.Caller(2)
 	if err != nil {
@@ -80,13 +90,13 @@ func (l Logger) log(level fw.LogLevel, message string) {
 	l.entryRepo.createLogEntry(level, l.prefix, caller.LineNumber, caller.FullFilename, message, now)
 }
 
-func (l Logger) levelAbove(logLevel fw.LogLevel) bool {
+func (l Logger) levelAbove(logLevel LogLevel) bool {
 	return priorities[l.level] < priorities[logLevel]
 }
 
 func NewLogger(
 	prefix string,
-	level fw.LogLevel,
+	level LogLevel,
 	timer fw.Timer,
 	programRuntime fw.ProgramRuntime,
 	entryRepo EntryRepository,

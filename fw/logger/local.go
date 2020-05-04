@@ -1,4 +1,4 @@
-package mdlogger
+package logger
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ type Local struct {
 }
 
 func (local Local) createLogEntry(
-	level fw.LogLevel,
+	level LogLevel,
 	prefix string,
 	line int,
 	filename string,
@@ -47,19 +47,19 @@ func (local Local) createLogEntry(
 	)
 }
 
-func (local Local) getLogLevelName(level fw.LogLevel) string {
+func (local Local) getLogLevelName(level LogLevel) string {
 	switch level {
-	case fw.LogFatal:
+	case LogFatal:
 		return logFatalName
-	case fw.LogError:
+	case LogError:
 		return logErrorName
-	case fw.LogWarn:
+	case LogWarn:
 		return logWarnName
-	case fw.LogInfo:
+	case LogInfo:
 		return logInfoName
-	case fw.LogDebug:
+	case LogDebug:
 		return logDebugName
-	case fw.LogTrace:
+	case LogTrace:
 		return logTraceName
 	default:
 		return "Should not happen"

@@ -1,4 +1,4 @@
-package mdlogger
+package logger
 
 import (
 	"encoding/json"
@@ -23,7 +23,7 @@ type DataDogEntryRepo struct {
 }
 
 func (d DataDogEntryRepo) createLogEntry(
-	level fw.LogLevel,
+	level LogLevel,
 	prefix string,
 	line int,
 	filename string,
@@ -42,19 +42,19 @@ func (d DataDogEntryRepo) createLogEntry(
 
 // getSeverity converts internal log severity to DataDog's log status.
 // Here is DataDog's documentation: https://docs.datadoghq.com/logs/processing/processors/?tab=ui#log-status-remapper
-func getSeverity(level fw.LogLevel) string {
+func getSeverity(level LogLevel) string {
 	switch level {
-	case fw.LogFatal:
+	case LogFatal:
 		return "critical"
-	case fw.LogError:
+	case LogError:
 		return "error"
-	case fw.LogWarn:
+	case LogWarn:
 		return "warning"
-	case fw.LogInfo:
+	case LogInfo:
 		return "info"
-	case fw.LogDebug:
+	case LogDebug:
 		return "debug"
-	case fw.LogTrace:
+	case LogTrace:
 		return "debug"
 	default:
 		return "Should not happen"
@@ -62,7 +62,7 @@ func getSeverity(level fw.LogLevel) string {
 }
 
 func (d DataDogEntryRepo) requestBody(
-	level fw.LogLevel,
+	level LogLevel,
 	prefix string,
 	line int,
 	filename string,
