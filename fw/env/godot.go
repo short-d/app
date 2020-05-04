@@ -1,19 +1,18 @@
-package mdenv
+package env
 
 import (
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/short-d/app/fw"
 )
 
-var _ fw.Environment = (*GoDotEnv)(nil)
+var _ Env = (*GoDotEnv)(nil)
 
 type GoDotEnv struct {
 }
 
-func (g GoDotEnv) GetEnv(key string, defaultValue string) string {
+func (g GoDotEnv) GetVar(key string, defaultValue string) string {
 	val := os.Getenv(key)
 	if val == "" {
 		return defaultValue

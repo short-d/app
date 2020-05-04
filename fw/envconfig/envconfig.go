@@ -6,13 +6,14 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/env"
+
 	"github.com/short-d/app/fw/unit"
 )
 
 // EnvConfig parses configuration from environmental variables.
 type EnvConfig struct {
-	environment fw.Environment
+	env env.Env
 }
 
 // ParseConfigFromEnv retrieves configurations from environmental variables and
@@ -42,7 +43,7 @@ func (e EnvConfig) ParseConfigFromEnv(config interface{}) error {
 			continue
 		}
 		defaultVal := field.Tag.Get("default")
-		envVal := e.environment.GetEnv(envName, defaultVal)
+		envVal := e.env.GetVar(envName, defaultVal)
 		err := setFieldValue(field, elem.Field(idx), envVal)
 		if err != nil {
 			return err
@@ -94,6 +95,6 @@ func parseInt(newValue string, typeOfValue reflect.Type) (int64, error) {
 }
 
 // NewEnvConfig creates EnvConfig.
-func NewEnvConfig(environment fw.Environment) EnvConfig {
-	return EnvConfig{environment: environment}
+func NewEnvConfig(env env.Env) EnvConfig {
+	return EnvConfig{env: env}
 }
