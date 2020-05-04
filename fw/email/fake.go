@@ -1,13 +1,13 @@
 package email
 
-var _ Sender = (*SenderFake)(nil)
+var _ Sender = (*SenderStub)(nil)
 
-type SenderFake struct {
+type SenderStub struct {
 	sendError error
 	sentEmail Email
 }
 
-func (s *SenderFake) SendEmail(email Email) error {
+func (s *SenderStub) SendEmail(email Email) error {
 	if s.sendError != nil {
 		return s.sendError
 	}
@@ -16,14 +16,14 @@ func (s *SenderFake) SendEmail(email Email) error {
 	return nil
 }
 
-func (s SenderFake) GetSentEmail() Email {
+func (s SenderStub) GetSentEmail() Email {
 	return s.sentEmail
 }
 
-func (s *SenderFake) SetSendError(err error) {
+func (s *SenderStub) SetSendError(err error) {
 	s.sendError = err
 }
 
-func NewSenderFake() SenderFake {
-	return SenderFake{}
+func NewSenderStub() SenderStub {
+	return SenderStub{}
 }
