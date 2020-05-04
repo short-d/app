@@ -3,6 +3,8 @@ package logger
 import (
 	"fmt"
 
+	"github.com/short-d/app/fw/timer"
+
 	"github.com/short-d/app/fw"
 )
 
@@ -33,7 +35,7 @@ var priorities = map[LogLevel]priority{
 type Logger struct {
 	prefix         string
 	level          LogLevel
-	timer          fw.Timer
+	timer          timer.Timer
 	programRuntime fw.ProgramRuntime
 	entryRepo      EntryRepository
 }
@@ -97,7 +99,7 @@ func (l Logger) levelAbove(logLevel LogLevel) bool {
 func NewLogger(
 	prefix string,
 	level LogLevel,
-	timer fw.Timer,
+	timer timer.Timer,
 	programRuntime fw.ProgramRuntime,
 	entryRepo EntryRepository,
 ) Logger {

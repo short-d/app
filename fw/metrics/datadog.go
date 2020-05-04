@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/short-d/app/fw/timer"
+
 	"github.com/short-d/app/fw"
 )
 
@@ -37,7 +39,7 @@ type timeSeries struct {
 type DataDog struct {
 	apiKey      string
 	httpRequest fw.HTTPRequest
-	timer       fw.Timer
+	timer       timer.Timer
 	serverEnv   fw.ServerEnv
 }
 
@@ -122,7 +124,7 @@ func (d DataDog) authHeaders() map[string]string {
 func NewDataDog(
 	apiKey string,
 	httpRequest fw.HTTPRequest,
-	timer fw.Timer,
+	timer timer.Timer,
 	serverEnv fw.ServerEnv,
 ) DataDog {
 	return DataDog{
