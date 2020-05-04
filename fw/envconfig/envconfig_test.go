@@ -1,4 +1,4 @@
-package mdenvconfig
+package envconfig
 
 import (
 	"testing"

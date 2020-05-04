@@ -1,4 +1,4 @@
-package mdenvconfig
+package envconfig
 
 import (
 	"errors"
@@ -9,8 +9,6 @@ import (
 	"github.com/short-d/app/fw"
 	"github.com/short-d/app/unit"
 )
-
-var _ fw.EnvConfig = (*EnvConfig)(nil)
 
 // EnvConfig parses configuration from environmental variables.
 type EnvConfig struct {
