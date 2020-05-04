@@ -9,7 +9,6 @@ type Fake struct {
 }
 
 func (f Fake) Caller(numLevelsUp int) (Caller, error) {
-
 	if numLevelsUp > len(f.callers) {
 		return Caller{}, errors.New("level of range")
 	}
