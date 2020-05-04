@@ -1,4 +1,4 @@
-package mdmetrics
+package metrics
 
 import (
 	"encoding/json"
