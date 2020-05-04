@@ -2,18 +2,19 @@ package analytics
 
 import (
 	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/logger"
 	"gopkg.in/segmentio/analytics-go.v3"
 )
 
 // Segment API =>
 //   https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/
 
-var _ fw.Analytics = (*Segment)(nil)
+var _ Analytics = (*Segment)(nil)
 
 type Segment struct {
 	client analytics.Client
 	timer  fw.Timer
-	logger fw.Logger
+	logger logger.Logger
 }
 
 func (s Segment) Identify(userID string, traits map[string]string) {
@@ -90,7 +91,7 @@ func (s Segment) enqueue(message analytics.Message) {
 	s.logger.Error(err)
 }
 
-func NewSegment(segmentWriteKey string, timer fw.Timer, logger fw.Logger) Segment {
+func NewSegment(segmentWriteKey string, timer fw.Timer, logger logger.Logger) Segment {
 	client := analytics.New(segmentWriteKey)
 	return Segment{
 		client: client,

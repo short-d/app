@@ -12,7 +12,7 @@ import (
 // https://docs.datadoghq.com/api/??lang=bash#post-timeseries-points
 const dataDogMetricsApi = "https://api.datadoghq.com/api/v1/series"
 
-var _ fw.Metrics = (*DataDog)(nil)
+var _ Metrics = (*DataDog)(nil)
 
 type metricType string
 

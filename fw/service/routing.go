@@ -5,7 +5,6 @@ import (
 
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/router"
-	"github.com/short-d/app/modern/mdrouter"
 )
 
 var _ Service = (*Routing)(nil)
@@ -44,9 +43,14 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 	httpRouter := router.NewHTTPHandler()
 
 	for _, route := range routes {
-		err := httpRouter.AddRoute(route.Method, route.MatchPrefix, route.Path, func(w http.ResponseWriter, r *http.Request, params mdrouter.Params) {
-			route.Handle(w, r, params)
-		})
+		err := httpRouter.AddRoute(
+			route.Method,
+			route.MatchPrefix,
+			route.Path,
+			func(w http.ResponseWriter, r *http.Request, params router.Params,
+			) {
+				route.Handle(w, r, params)
+			})
 		if err != nil {
 			panic(err)
 		}

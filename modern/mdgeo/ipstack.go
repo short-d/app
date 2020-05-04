@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/logger"
 )
 
 var _ fw.GeoLocation = (*IPStack)(nil)
@@ -55,7 +56,7 @@ type jsonResponse struct {
 type IPStack struct {
 	apiKey      string
 	httpRequest fw.HTTPRequest
-	logger      fw.Logger
+	logger      logger.Logger
 }
 
 func (I IPStack) GetLocation(ipAddress string) (fw.Location, error) {
@@ -99,7 +100,7 @@ func (I IPStack) GetLocation(ipAddress string) (fw.Location, error) {
 	}, nil
 }
 
-func NewIPStack(apiKey string, httpRequest fw.HTTPRequest, logger fw.Logger) IPStack {
+func NewIPStack(apiKey string, httpRequest fw.HTTPRequest, logger logger.Logger) IPStack {
 	return IPStack{
 		apiKey:      apiKey,
 		httpRequest: httpRequest,

@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/short-d/app/fw"
-	"github.com/short-d/app/unit"
+	"github.com/short-d/app/fw/unit"
 )
 
 // EnvConfig parses configuration from environmental variables.
