@@ -4,7 +4,7 @@ import (
 	"github.com/short-d/app/fw/ctx"
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/timer"
-	"gopkg.in/segmentio/analytics-go.v3"
+	segment "gopkg.in/segmentio/analytics-go.v3"
 )
 
 // Segment API =>
@@ -13,19 +13,19 @@ import (
 var _ Analytics = (*Segment)(nil)
 
 type Segment struct {
-	client analytics.Client
+	client segment.Client
 	timer  timer.Timer
 	logger logger.Logger
 }
 
 func (s Segment) Identify(userID string, traits map[string]string) {
-	segmentTraits := analytics.NewTraits()
+	segmentTraits := segment.NewTraits()
 	for trait, val := range traits {
 		segmentTraits.Set(trait, val)
 	}
 
 	now := s.timer.Now()
-	s.enqueue(analytics.Identify{
+	s.enqueue(segment.Identify{
 		UserId:    userID,
 		Traits:    segmentTraits,
 		Timestamp: now,
@@ -34,7 +34,7 @@ func (s Segment) Identify(userID string, traits map[string]string) {
 
 func (s Segment) Group(userID string, groupID string) {
 	now := s.timer.Now()
-	s.enqueue(analytics.Group{
+	s.enqueue(segment.Group{
 		UserId:    userID,
 		GroupId:   groupID,
 		Timestamp: now,
@@ -43,7 +43,7 @@ func (s Segment) Group(userID string, groupID string) {
 
 func (s Segment) Alias(prevUserID string, newUserID string) {
 	now := s.timer.Now()
-	s.enqueue(analytics.Alias{
+	s.enqueue(segment.Alias{
 		PreviousId: prevUserID,
 		UserId:     newUserID,
 		Timestamp:  now,
@@ -51,7 +51,7 @@ func (s Segment) Alias(prevUserID string, newUserID string) {
 }
 
 func (s Segment) Track(eventName string, properties map[string]string, userID string, ctx ctx.ExecutionContext) {
-	props := analytics.NewProperties()
+	props := segment.NewProperties()
 	for prop, val := range properties {
 		props.Set(prop, val)
 	}
@@ -60,7 +60,7 @@ func (s Segment) Track(eventName string, properties map[string]string, userID st
 	trackGeoLocation(ctx, &props)
 
 	now := s.timer.Now()
-	s.enqueue(analytics.Track{
+	s.enqueue(segment.Track{
 		Event:      eventName,
 		UserId:     userID,
 		Properties: props,
@@ -68,7 +68,7 @@ func (s Segment) Track(eventName string, properties map[string]string, userID st
 	})
 }
 
-func trackGeoLocation(ctx ctx.ExecutionContext, props *analytics.Properties) {
+func trackGeoLocation(ctx ctx.ExecutionContext, props *segment.Properties) {
 	props.Set("continent-code", ctx.Location.Continent.Code)
 	props.Set("continent-name", ctx.Location.Continent.Name)
 	props.Set("country-code", ctx.Location.Country.Code)
@@ -84,7 +84,7 @@ func trackGeoLocation(ctx ctx.ExecutionContext, props *analytics.Properties) {
 	props.Set("city", ctx.Location.City)
 }
 
-func (s Segment) enqueue(message analytics.Message) {
+func (s Segment) enqueue(message segment.Message) {
 	err := s.client.Enqueue(message)
 	if err == nil {
 		return
@@ -93,7 +93,7 @@ func (s Segment) enqueue(message analytics.Message) {
 }
 
 func NewSegment(segmentWriteKey string, timer timer.Timer, logger logger.Logger) Segment {
-	client := analytics.New(segmentWriteKey)
+	client := segment.New(segmentWriteKey)
 	return Segment{
 		client: client,
 		timer:  timer,

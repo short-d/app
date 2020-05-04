@@ -4,6 +4,7 @@ import (
 	"github.com/short-d/app/fw/ctx"
 )
 
+// TODO(issue#83): Fill in fake Analytics to facilitate testing
 var _ Analytics = (*Fake)(nil)
 
 type Fake struct {
