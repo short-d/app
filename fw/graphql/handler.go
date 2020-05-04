@@ -5,7 +5,6 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
-	"github.com/short-d/app/fw"
 )
 
 type Handler http.Handler
@@ -20,7 +19,7 @@ func (g GraphGopherHandler) ServeHTTP(writer http.ResponseWriter, reader *http.R
 	g.handler.ServeHTTP(writer, reader)
 }
 
-func NewGraphGopherHandler(api fw.GraphQLAPI) GraphGopherHandler {
+func NewGraphGopherHandler(api API) GraphGopherHandler {
 	schema := graphql.MustParseSchema(
 		api.GetSchema(),
 		api.GetResolver(),
