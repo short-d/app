@@ -1,13 +1,17 @@
-package mddb
+package db
 
 import (
 	"database/sql"
 
 	migrate "github.com/rubenv/sql-migrate"
-	"github.com/short-d/app/fw"
 )
 
-var _ fw.DBMigrationTool = (*PostgresMigrationTool)(nil)
+type MigrationTool interface {
+	MigrateUp(db *sql.DB, migrationRoot string) error
+	MigrateDown(db *sql.DB, migrationRoot string) error
+}
+
+var _ MigrationTool = (*PostgresMigrationTool)(nil)
 
 type PostgresMigrationTool struct {
 }

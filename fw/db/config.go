@@ -7,4 +7,3 @@ type Config struct {
 	Password string
 	DbName   string
 }
-
