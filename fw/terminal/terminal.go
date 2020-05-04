@@ -51,16 +51,18 @@ var (
 	enterKey          = string([]byte{0x0a})
 )
 
+type KeyName string
+
 const (
-	CursorUpName       = "cursorUp"
-	CursorDownName     = "cursorDown"
-	CursorForwardName  = "cursorForward"
-	CursorBackwardName = "cursorDownward"
-	CtrlEName          = "Ctrl+E"
-	EnterName          = "enter"
+	CursorUpName       KeyName = "cursorUp"
+	CursorDownName     KeyName = "cursorDown"
+	CursorForwardName  KeyName = "cursorForward"
+	CursorBackwardName KeyName = "cursorDownward"
+	CtrlEName          KeyName = "Ctrl+E"
+	EnterName          KeyName = "enter"
 )
 
-var keyNames = map[string]string{
+var keyNames = map[string]KeyName{
 	cursorUpKey:       CursorUpName,
 	cursorDownKey:     CursorDownName,
 	cursorForwardKey:  CursorForwardName,
@@ -168,7 +170,7 @@ func (t Terminal) StartEventLoop() {
 					continue
 				}
 
-				t.eventBus.Publish(keyName, nil)
+				t.eventBus.Publish(string(keyName), nil)
 				buf = nil
 			}
 		}
@@ -217,8 +219,8 @@ func (t Terminal) RestoreCursorPosition() {
 	t.escape([]byte{0x75})
 }
 
-func (t Terminal) OnKeyPress(keyName string, ch eventbus.DataChannel) {
-	t.eventBus.Subscribe(keyName, ch)
+func (t Terminal) OnKeyPress(keyName KeyName, ch eventbus.DataChannel) {
+	t.eventBus.Subscribe(string(keyName), ch)
 }
 
 func (t Terminal) turnOffTextAttributes() {
