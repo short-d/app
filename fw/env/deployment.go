@@ -1,18 +1,18 @@
 package env
 
-type runtime string
+type Runtime string
 
 const (
 	// Production implies the server is running under production environment.
-	Production runtime = "production"
+	Production Runtime = "production"
 	// PreProd implies the server is running under pre-prod environment.
-	PreProd runtime = "pre-prod"
+	PreProd Runtime = "pre-prod"
 	// Staging implies the server is running under staging environment.
-	Staging runtime = "staging"
+	Staging Runtime = "staging"
 	// Testing implies the server is running under testing environment.
-	Testing runtime = "testing"
+	Testing Runtime = "testing"
 	// Development implies the server is running on developer's local machine.
-	Development runtime = "development"
+	Development Runtime = "development"
 )
 
 type Deployment struct {
@@ -20,27 +20,27 @@ type Deployment struct {
 }
 
 func (d Deployment) IsProduction() bool {
-	return d.getEnv() == Production
+	return d.GetRuntime() == Production
 }
 
 func (d Deployment) IsPreProd() bool {
-	return d.getEnv() == PreProd
+	return d.GetRuntime() == PreProd
 }
 
 func (d Deployment) IsStaging() bool {
-	return d.getEnv() == Staging
+	return d.GetRuntime() == Staging
 }
 
 func (d Deployment) IsTesting() bool {
-	return d.getEnv() == Testing
+	return d.GetRuntime() == Testing
 }
 
 func (d Deployment) IsLocal() bool {
-	return d.getEnv() == Development
+	return d.GetRuntime() == Development
 }
 
-func (d Deployment) getEnv() runtime {
-	return runtime(d.env.GetVar("ENV", string(Development)))
+func (d Deployment) GetRuntime() Runtime {
+	return Runtime(d.env.GetVar("ENV", string(Development)))
 }
 
 func NewDeployment(env Env) Deployment {
