@@ -1,10 +1,7 @@
-package mdcrypto
+package crypto
 
 import (
 	"errors"
-
-	"github.com/short-d/app/fw"
-
 	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
@@ -15,12 +12,12 @@ type JwtGo struct {
 	secret    []byte
 }
 
-func (j JwtGo) Encode(payload fw.TokenPayload) (string, error) {
+func (j JwtGo) Encode(payload TokenPayload) (string, error) {
 	token := jwt.NewWithClaims(j.algorithm, jwt.MapClaims(payload))
 	return token.SignedString(j.secret)
 }
 
-func (j JwtGo) Decode(tokenStr string) (fw.TokenPayload, error) {
+func (j JwtGo) Decode(tokenStr string) (TokenPayload, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (i interface{}, e error) {
 		return j.secret, nil
 	})
@@ -47,7 +44,7 @@ func (j JwtGo) Decode(tokenStr string) (fw.TokenPayload, error) {
 	return claims, nil
 }
 
-func NewJwtGo(secret string) fw.CryptoTokenizer {
+func NewJwtGo(secret string) Tokenizer {
 	return JwtGo{
 		algorithm: jwt.SigningMethodHS256,
 		secret:    []byte(secret),
