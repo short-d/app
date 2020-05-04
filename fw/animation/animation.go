@@ -3,7 +3,7 @@ package animation
 import (
 	"time"
 
-	"github.com/short-d/app/tool/ticker"
+	"github.com/short-d/app/fw/timer"
 )
 
 type Animation struct {
@@ -11,6 +11,7 @@ type Animation struct {
 	interval     time.Duration
 	currFrameIdx int
 	frameCount   int
+	timer        timer.Timer
 	done         chan bool
 }
 
@@ -24,7 +25,7 @@ func (a *Animation) nextFrame() {
 }
 
 func (a *Animation) Start() {
-	a.done = ticker.NewTicker(a.interval, func() {
+	a.done = a.timer.Ticker(a.interval, func() {
 		a.nextFrame()
 	})
 }
@@ -33,11 +34,12 @@ func (a *Animation) Stop() {
 	a.done <- true
 }
 
-func NewAnimation(frames []string, interval time.Duration) Animation {
+func NewAnimation(frames []string, interval time.Duration, timer timer.Timer) Animation {
 	return Animation{
 		frames:       frames,
 		frameCount:   len(frames),
 		interval:     interval,
 		currFrameIdx: 0,
+		timer:        timer,
 	}
 }
