@@ -1,14 +1,12 @@
-package mdtemplate
+package template
 
 import (
 	"bytes"
 	"html/template"
 	"path"
-
-	"github.com/short-d/app/fw"
 )
 
-var _ fw.Template = (*HTML)(nil)
+var _ Template = (*HTML)(nil)
 
 type HTML struct {
 	templateRootDir string
