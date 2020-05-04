@@ -3,9 +3,9 @@ package logger
 import (
 	"fmt"
 
-	"github.com/short-d/app/fw/timer"
+	"github.com/short-d/app/fw/runtime"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/timer"
 )
 
 type LogLevel int
@@ -33,11 +33,11 @@ var priorities = map[LogLevel]priority{
 }
 
 type Logger struct {
-	prefix         string
-	level          LogLevel
-	timer          timer.Timer
-	programRuntime fw.ProgramRuntime
-	entryRepo      EntryRepository
+	prefix    string
+	level     LogLevel
+	timer     timer.Timer
+	runtime   runtime.Runtime
+	entryRepo EntryRepository
 }
 
 func (l Logger) Fatal(message string) {
@@ -84,7 +84,7 @@ func (l Logger) Trace(message string) {
 
 func (l Logger) log(level LogLevel, message string) {
 	now := l.timer.Now().UTC()
-	caller, err := l.programRuntime.Caller(2)
+	caller, err := l.runtime.Caller(2)
 	if err != nil {
 		l.entryRepo.createLogEntry(level, l.prefix, 0, "", message, now)
 		return
@@ -100,14 +100,14 @@ func NewLogger(
 	prefix string,
 	level LogLevel,
 	timer timer.Timer,
-	programRuntime fw.ProgramRuntime,
+	runtime runtime.Runtime,
 	entryRepo EntryRepository,
 ) Logger {
 	return Logger{
-		prefix:         prefix,
-		level:          level,
-		timer:          timer,
-		programRuntime: programRuntime,
-		entryRepo:      entryRepo,
+		prefix:    prefix,
+		level:     level,
+		timer:     timer,
+		runtime:   runtime,
+		entryRepo: entryRepo,
 	}
 }

@@ -1,11 +1,11 @@
-package fw
+package runtime
 
 type Caller struct {
 	FullFilename string
 	LineNumber   int
 }
 
-type ProgramRuntime interface {
+type Runtime interface {
 	LockOSThread()
 	Caller(numLevelsUp int) (Caller, error)
 }

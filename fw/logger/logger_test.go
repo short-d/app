@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/runtime"
 	"github.com/short-d/app/mdtest"
 )
 
@@ -16,7 +16,7 @@ func TestLogger_Fatal(t *testing.T) {
 		now             string
 		prefix          string
 		messages        []string
-		callers         []fw.Caller
+		callers         []runtime.Caller
 		expectedEntries []Entry
 	}{
 		{
@@ -25,7 +25,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log fatal message",
@@ -33,7 +33,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message 1", "message 2"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogFatal,
@@ -59,7 +59,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogFatal,
@@ -77,7 +77,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogFatal,
@@ -95,7 +95,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogFatal,
@@ -113,7 +113,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogFatal,
@@ -131,7 +131,7 @@ func TestLogger_Fatal(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogFatal,
@@ -151,7 +151,7 @@ func TestLogger_Fatal(t *testing.T) {
 			mdtest.Equal(t, nil, err)
 			timer := mdtest.NewTimerFake(now)
 
-			programRuntime, err := mdtest.NewProgramRuntimeFake(testCase.callers)
+			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
@@ -180,7 +180,7 @@ func TestLogger_Error(t *testing.T) {
 		now             string
 		prefix          string
 		messages        []string
-		callers         []fw.Caller
+		callers         []runtime.Caller
 		expectedEntries []Entry
 	}{
 		{
@@ -203,7 +203,7 @@ func TestLogger_Error(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message 1", "message 2"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogError,
@@ -229,7 +229,7 @@ func TestLogger_Error(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogError,
@@ -247,7 +247,7 @@ func TestLogger_Error(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogError,
@@ -265,7 +265,7 @@ func TestLogger_Error(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogError,
@@ -283,7 +283,7 @@ func TestLogger_Error(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogError,
@@ -303,7 +303,7 @@ func TestLogger_Error(t *testing.T) {
 			mdtest.Equal(t, nil, err)
 			timer := mdtest.NewTimerFake(now)
 
-			programRuntime, err := mdtest.NewProgramRuntimeFake(testCase.callers)
+			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
@@ -332,7 +332,7 @@ func TestLogger_Warn(t *testing.T) {
 		now             string
 		prefix          string
 		messages        []string
-		callers         []fw.Caller
+		callers         []runtime.Caller
 		expectedEntries []Entry
 	}{
 		{
@@ -341,7 +341,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log fatal message",
@@ -349,7 +349,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log error message",
@@ -357,7 +357,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log warn message",
@@ -365,7 +365,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message 1", "message 2"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogWarn,
@@ -391,7 +391,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogWarn,
@@ -409,7 +409,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogWarn,
@@ -427,7 +427,7 @@ func TestLogger_Warn(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogWarn,
@@ -447,7 +447,7 @@ func TestLogger_Warn(t *testing.T) {
 			mdtest.Equal(t, nil, err)
 			timer := mdtest.NewTimerFake(now)
 
-			programRuntime, err := mdtest.NewProgramRuntimeFake(testCase.callers)
+			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
@@ -476,7 +476,7 @@ func TestLogger_Info(t *testing.T) {
 		now             string
 		prefix          string
 		messages        []string
-		callers         []fw.Caller
+		callers         []runtime.Caller
 		expectedEntries []Entry
 	}{
 		{
@@ -485,7 +485,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log fatal message",
@@ -493,7 +493,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log error message",
@@ -501,7 +501,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log warn message",
@@ -509,7 +509,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log info message",
@@ -517,7 +517,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message 1", "message 2"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogInfo,
@@ -543,7 +543,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogInfo,
@@ -561,7 +561,7 @@ func TestLogger_Info(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogInfo,
@@ -581,7 +581,7 @@ func TestLogger_Info(t *testing.T) {
 			mdtest.Equal(t, nil, err)
 			timer := mdtest.NewTimerFake(now)
 
-			programRuntime, err := mdtest.NewProgramRuntimeFake(testCase.callers)
+			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
@@ -610,7 +610,7 @@ func TestLogger_Debug(t *testing.T) {
 		now             string
 		prefix          string
 		messages        []string
-		callers         []fw.Caller
+		callers         []runtime.Caller
 		expectedEntries []Entry
 	}{
 		{
@@ -619,7 +619,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log fatal message",
@@ -627,7 +627,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log error message",
@@ -635,7 +635,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log warn message",
@@ -643,7 +643,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log info message",
@@ -651,7 +651,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log debug message",
@@ -659,7 +659,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message 1", "message 2"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogDebug,
@@ -685,7 +685,7 @@ func TestLogger_Debug(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogDebug,
@@ -705,7 +705,7 @@ func TestLogger_Debug(t *testing.T) {
 			mdtest.Equal(t, nil, err)
 			timer := mdtest.NewTimerFake(now)
 
-			programRuntime, err := mdtest.NewProgramRuntimeFake(testCase.callers)
+			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
@@ -734,7 +734,7 @@ func TestLogger_Trace(t *testing.T) {
 		now             string
 		prefix          string
 		messages        []string
-		callers         []fw.Caller
+		callers         []runtime.Caller
 		expectedEntries []Entry
 	}{
 		{
@@ -743,7 +743,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log fatal message",
@@ -751,7 +751,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{},
-			callers:  []fw.Caller{},
+			callers:  []runtime.Caller{},
 		},
 		{
 			name:     "log error message",
@@ -759,7 +759,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log warn message",
@@ -767,7 +767,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log info message",
@@ -775,7 +775,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log debug message",
@@ -783,7 +783,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 		},
 		{
 			name:     "log trace message",
@@ -791,7 +791,7 @@ func TestLogger_Trace(t *testing.T) {
 			now:      "2020-01-04T10:20:04-00:00",
 			prefix:   "Prefix",
 			messages: []string{"message 1", "message 2"},
-			callers:  []fw.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
+			callers:  []runtime.Caller{{}, {}, {FullFilename: "github.com/short-d/app/test.go", LineNumber: 10}},
 			expectedEntries: []Entry{
 				{
 					Level:    LogTrace,
@@ -819,7 +819,7 @@ func TestLogger_Trace(t *testing.T) {
 			mdtest.Equal(t, nil, err)
 			timer := mdtest.NewTimerFake(now)
 
-			programRuntime, err := mdtest.NewProgramRuntimeFake(testCase.callers)
+			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
