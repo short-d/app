@@ -1,4 +1,4 @@
-package mdhttp
+package web
 
 import "net/http"
 
