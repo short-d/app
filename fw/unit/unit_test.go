@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/short-d/app/mdtest"
+	"github.com/short-d/app/fw/assert"
 )
 
 func TestParseDuration(t *testing.T) {
@@ -52,11 +52,11 @@ func TestParseDuration(t *testing.T) {
 			t.Run(testCase.name, func(t *testing.T) {
 				duration, err := ParseDuration(testCase.time)
 				if testCase.expectedHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedDuration, duration)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedDuration, duration)
 			})
 		}
 	})
@@ -104,11 +104,11 @@ func TestParseDuration(t *testing.T) {
 			t.Run(testCase.name, func(t *testing.T) {
 				duration, err := ParseDuration(testCase.time)
 				if testCase.expectedHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedDuration, duration)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedDuration, duration)
 			})
 		}
 	})
@@ -156,11 +156,11 @@ func TestParseDuration(t *testing.T) {
 			t.Run(testCase.name, func(t *testing.T) {
 				duration, err := ParseDuration(testCase.time)
 				if testCase.expectedHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedDuration, duration)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedDuration, duration)
 			})
 		}
 	})
@@ -208,11 +208,11 @@ func TestParseDuration(t *testing.T) {
 			t.Run(testCase.name, func(t *testing.T) {
 				duration, err := ParseDuration(testCase.time)
 				if testCase.expectedHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedDuration, duration)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedDuration, duration)
 			})
 		}
 	})
@@ -260,11 +260,11 @@ func TestParseDuration(t *testing.T) {
 			t.Run(testCase.name, func(t *testing.T) {
 				duration, err := ParseDuration(testCase.time)
 				if testCase.expectedHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedDuration, duration)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedDuration, duration)
 			})
 		}
 	})

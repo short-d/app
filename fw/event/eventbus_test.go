@@ -1,28 +1,24 @@
-package mdevent
+package event
 
 import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/short-d/app/fw"
-
-	"github.com/asaskevich/EventBus"
-
-	"github.com/short-d/app/mdtest"
+	"github.com/short-d/app/fw/assert"
 )
 
-func TestEventDispatcher_Dispatch(t *testing.T) {
+func TestEventbus_Dispatch(t *testing.T) {
 	testCases := []struct {
 		name      string
-		events    []fw.Event
-		listeners []fw.Listener
+		events    []Event
+		listeners []Listener
 	}{
 		{
 			name: "one event one listener",
-			events: []fw.Event{
+			events: []Event{
 				fakeEvent("event1"),
 			},
-			listeners: []fw.Listener{
+			listeners: []Listener{
 				&fakeListener{
 					name:          "event1",
 					expectedCalls: 1,
@@ -31,10 +27,10 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 		},
 		{
 			name: "one event two listener",
-			events: []fw.Event{
+			events: []Event{
 				fakeEvent("event1"),
 			},
-			listeners: []fw.Listener{
+			listeners: []Listener{
 				&fakeListener{
 					name:          "event1",
 					expectedCalls: 1,
@@ -47,10 +43,10 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 		},
 		{
 			name: "one of the listeners listens to another event",
-			events: []fw.Event{
+			events: []Event{
 				fakeEvent("event1"),
 			},
-			listeners: []fw.Listener{
+			listeners: []Listener{
 				&fakeListener{
 					name:          "event1",
 					expectedCalls: 1,
@@ -63,11 +59,11 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 		},
 		{
 			name: "two events two listeners",
-			events: []fw.Event{
+			events: []Event{
 				fakeEvent("event1"),
 				fakeEvent("event2"),
 			},
-			listeners: []fw.Listener{
+			listeners: []Listener{
 				&fakeListener{
 					name:          "event2",
 					expectedCalls: 1,
@@ -80,7 +76,7 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 		},
 		{
 			name: "multiple events calls",
-			events: []fw.Event{
+			events: []Event{
 				fakeEvent("event1"),
 				fakeEvent("event1"),
 				fakeEvent("event2"),
@@ -88,7 +84,7 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 				fakeEvent("event1"),
 				fakeEvent("event2"),
 			},
-			listeners: []fw.Listener{
+			listeners: []Listener{
 				&fakeListener{
 					name:          "event2",
 					expectedCalls: 2,
@@ -107,48 +103,48 @@ func TestEventDispatcher_Dispatch(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			eventDispatcher := NewEventDispatcher(EventBus.New())
+			Eventbus := NewEventBus()
 
-			err := eventDispatcher.BindListeners(testCase.listeners)
-			mdtest.Equal(t, nil, err)
+			err := Eventbus.BindListeners(testCase.listeners)
+			assert.Equal(t, nil, err)
 
 			for _, e := range testCase.events {
-				err = eventDispatcher.Dispatch(e)
-				mdtest.Equal(t, nil, err)
+				err = Eventbus.Dispatch(e)
+				assert.Equal(t, nil, err)
 			}
 
-			err = eventDispatcher.Close()
-			mdtest.Equal(t, nil, err)
+			err = Eventbus.Close()
+			assert.Equal(t, nil, err)
 
 			for _, obj := range testCase.listeners {
 				listener, ok := obj.(*fakeListener)
 
-				mdtest.Equal(t, true, ok)
-				mdtest.Equal(t, listener.expectedCalls, listener.actualCalls)
+				assert.Equal(t, true, ok)
+				assert.Equal(t, listener.expectedCalls, listener.actualCalls)
 			}
 		})
 	}
 }
 
-func TestEventDispatcher_Close(t *testing.T) {
+func TestEventbus_Close(t *testing.T) {
 	ev := fakeEvent("event1")
-	eventDispatcher := NewEventDispatcher(EventBus.New())
+	Eventbus := NewEventBus()
 	listener := &fakeListener{name: ev.GetName()}
 
-	_ = eventDispatcher.BindListeners([]fw.Listener{listener})
+	_ = Eventbus.BindListeners([]Listener{listener})
 
-	err := eventDispatcher.Dispatch(ev)
-	mdtest.Equal(t, nil, err)
+	err := Eventbus.Dispatch(ev)
+	assert.Equal(t, nil, err)
 
-	err = eventDispatcher.Close()
-	mdtest.Equal(t, nil, err)
+	err = Eventbus.Close()
+	assert.Equal(t, nil, err)
 
-	err = eventDispatcher.Dispatch(ev)
-	mdtest.Equal(t, fw.ErrDispatcherIsClosed, err)
+	err = Eventbus.Dispatch(ev)
+	assert.Equal(t, ErrDispatcherIsClosed, err)
 
 	// there was no any listener call, because we have unsubscribed the listener
-	mdtest.Equal(t, int32(1), listener.actualCalls)
-	mdtest.Equal(t, fw.ErrDispatcherIsClosed, eventDispatcher.Close())
+	assert.Equal(t, int32(1), listener.actualCalls)
+	assert.Equal(t, ErrDispatcherIsClosed, Eventbus.Close())
 }
 
 type fakeListener struct {
@@ -157,7 +153,7 @@ type fakeListener struct {
 	actualCalls   int32
 }
 
-func (f *fakeListener) Handle(e fw.Event) {
+func (f *fakeListener) Handle(e Event) {
 	// atomically increase actualCalls number, because of concurrent access to this variable
 	atomic.AddInt32(&f.actualCalls, 1)
 }

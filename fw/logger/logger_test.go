@@ -5,10 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/short-d/app/fw/timer"
-
+	"github.com/short-d/app/fw/assert"
 	"github.com/short-d/app/fw/runtime"
-	"github.com/short-d/app/mdtest"
+	"github.com/short-d/app/fw/timer"
 )
 
 func TestLogger_Fatal(t *testing.T) {
@@ -150,11 +149,11 @@ func TestLogger_Fatal(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
 
@@ -170,7 +169,7 @@ func TestLogger_Fatal(t *testing.T) {
 				logger.Fatal(message)
 			}
 
-			mdtest.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
+			assert.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
 		})
 	}
 }
@@ -302,11 +301,11 @@ func TestLogger_Error(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
 
@@ -322,7 +321,7 @@ func TestLogger_Error(t *testing.T) {
 				logger.Error(errors.New(message))
 			}
 
-			mdtest.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
+			assert.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
 		})
 	}
 }
@@ -446,11 +445,11 @@ func TestLogger_Warn(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
 
@@ -466,7 +465,7 @@ func TestLogger_Warn(t *testing.T) {
 				logger.Warn(message)
 			}
 
-			mdtest.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
+			assert.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
 		})
 	}
 }
@@ -580,11 +579,11 @@ func TestLogger_Info(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
 
@@ -600,7 +599,7 @@ func TestLogger_Info(t *testing.T) {
 				logger.Info(message)
 			}
 
-			mdtest.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
+			assert.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
 		})
 	}
 }
@@ -704,11 +703,11 @@ func TestLogger_Debug(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
 
@@ -724,7 +723,7 @@ func TestLogger_Debug(t *testing.T) {
 				logger.Debug(message)
 			}
 
-			mdtest.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
+			assert.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
 		})
 	}
 }
@@ -818,11 +817,11 @@ func TestLogger_Trace(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
-			mdtest.Equal(t, nil, err)
+			assert.Equal(t, nil, err)
 
 			EntryRepoFake := &EntryRepoFake{}
 
@@ -838,7 +837,7 @@ func TestLogger_Trace(t *testing.T) {
 				logger.Trace(message)
 			}
 
-			mdtest.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
+			assert.Equal(t, testCase.expectedEntries, EntryRepoFake.entries)
 		})
 	}
 }

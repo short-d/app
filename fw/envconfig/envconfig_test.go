@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/short-d/app/fw/assert"
 	"github.com/short-d/app/fw/env"
-
-	"github.com/short-d/app/mdtest"
 )
 
 func TestParseConfigFromEnv(t *testing.T) {
@@ -55,8 +54,8 @@ func TestParseConfigFromEnv(t *testing.T) {
 
 				envConfig := EnvConfig{env: envFake}
 				err := envConfig.ParseConfigFromEnv(&testCase.config)
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedConfig, testCase.config)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedConfig, testCase.config)
 			})
 		}
 	})
@@ -108,11 +107,11 @@ func TestParseConfigFromEnv(t *testing.T) {
 				envConfig := EnvConfig{env: envFake}
 				err := envConfig.ParseConfigFromEnv(&testCase.config)
 				if testCase.expectHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedConfig, testCase.config)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedConfig, testCase.config)
 			})
 		}
 	})
@@ -164,11 +163,11 @@ func TestParseConfigFromEnv(t *testing.T) {
 				envConfig := EnvConfig{env: envFake}
 				err := envConfig.ParseConfigFromEnv(&testCase.config)
 				if testCase.expectHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedConfig, testCase.config)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedConfig, testCase.config)
 			})
 		}
 	})
@@ -220,11 +219,11 @@ func TestParseConfigFromEnv(t *testing.T) {
 				envConfig := EnvConfig{env: envFake}
 				err := envConfig.ParseConfigFromEnv(&testCase.config)
 				if testCase.expectHasError {
-					mdtest.NotEqual(t, nil, err)
+					assert.NotEqual(t, nil, err)
 					return
 				}
-				mdtest.Equal(t, nil, err)
-				mdtest.Equal(t, testCase.expectedConfig, testCase.config)
+				assert.Equal(t, nil, err)
+				assert.Equal(t, testCase.expectedConfig, testCase.config)
 			})
 		}
 	})
@@ -256,7 +255,7 @@ func TestParseConfigFromEnv(t *testing.T) {
 
 				envConfig := EnvConfig{env: envFake}
 				err := envConfig.ParseConfigFromEnv(&testCase.config)
-				mdtest.NotEqual(t, nil, err)
+				assert.NotEqual(t, nil, err)
 				return
 			})
 		}

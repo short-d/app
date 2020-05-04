@@ -1,28 +1,26 @@
-package mdevent
+package event
 
 import (
 	"sync"
 
-	"github.com/short-d/app/fw"
-
 	"github.com/asaskevich/EventBus"
 )
 
-var _ fw.Dispatcher = (*EventDispatcher)(nil)
+var _ Dispatcher = (*Eventbus)(nil)
 
-// EventDispatcher publishes an event to all its subscribers
-type EventDispatcher struct {
+// EventBus publishes an event to all its subscribers
+type Eventbus struct {
 	eventBus EventBus.Bus
 	lock     sync.RWMutex
 	isClosed bool
 }
 
-func (d *EventDispatcher) Dispatch(event fw.Event) error {
+func (d *Eventbus) Dispatch(event Event) error {
 	d.lock.RLock()
 	defer d.lock.RUnlock()
 
 	if d.isClosed {
-		return fw.ErrDispatcherIsClosed
+		return ErrDispatcherIsClosed
 	}
 
 	d.eventBus.Publish(event.GetName(), event)
@@ -30,29 +28,29 @@ func (d *EventDispatcher) Dispatch(event fw.Event) error {
 	return nil
 }
 
-func (d *EventDispatcher) Subscribe(listener fw.Listener) error {
+func (d *Eventbus) Subscribe(listener Listener) error {
 	d.lock.RLock()
 	defer d.lock.RUnlock()
 
 	if d.isClosed {
-		return fw.ErrDispatcherIsClosed
+		return ErrDispatcherIsClosed
 	}
 
 	return d.eventBus.SubscribeAsync(listener.GetSubscribedEvent(), listener.Handle, false)
 }
 
-func (d *EventDispatcher) Unsubscribe(listener fw.Listener) error {
+func (d *Eventbus) Unsubscribe(listener Listener) error {
 	d.lock.RLock()
 	defer d.lock.RUnlock()
 
 	if d.isClosed {
-		return fw.ErrDispatcherIsClosed
+		return ErrDispatcherIsClosed
 	}
 
 	return d.eventBus.Unsubscribe(listener.GetSubscribedEvent(), listener.Handle)
 }
 
-func (d *EventDispatcher) BindListeners(listeners []fw.Listener) error {
+func (d *Eventbus) BindListeners(listeners []Listener) error {
 	for _, listener := range listeners {
 		if err := d.Subscribe(listener); err != nil {
 			return err
@@ -62,12 +60,12 @@ func (d *EventDispatcher) BindListeners(listeners []fw.Listener) error {
 	return nil
 }
 
-func (d *EventDispatcher) Close() error {
+func (d *Eventbus) Close() error {
 	d.lock.Lock()
 	defer d.lock.Unlock()
 
 	if d.isClosed {
-		return fw.ErrDispatcherIsClosed
+		return ErrDispatcherIsClosed
 	}
 
 	d.isClosed = true
@@ -76,10 +74,10 @@ func (d *EventDispatcher) Close() error {
 	return nil
 }
 
-// NewEventDispatcher creates a new instance of EventDispatcher type
-func NewEventDispatcher(eventBus EventBus.Bus) *EventDispatcher {
-	return &EventDispatcher{
-		eventBus: eventBus,
+// NewEventBus creates EventDispatcher
+func NewEventBus() *Eventbus {
+	return &Eventbus{
+		eventBus: EventBus.New(),
 		lock:     sync.RWMutex{},
 		isClosed: false,
 	}
