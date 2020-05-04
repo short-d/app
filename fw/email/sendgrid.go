@@ -1,4 +1,4 @@
-package mdemail
+package email
 
 import (
 	"errors"
@@ -6,10 +6,9 @@ import (
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"github.com/short-d/app/fw"
 )
 
-var _ fw.EmailSender = (*SendGrid)(nil)
+var _ Sender = (*SendGrid)(nil)
 
 const contentTypeHTML = "text/html"
 
@@ -17,7 +16,7 @@ type SendGrid struct {
 	apiKey string
 }
 
-func (s SendGrid) SendEmail(email fw.Email) error {
+func (s SendGrid) SendEmail(email Email) error {
 	from := mail.NewEmail(email.FromName, email.FromAddress)
 	to := mail.NewEmail(email.ToName, email.ToAddress)
 	content := mail.Content{

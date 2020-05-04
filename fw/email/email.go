@@ -1,4 +1,4 @@
-package fw
+package email
 
 type Email struct {
 	FromName    string
@@ -9,6 +9,6 @@ type Email struct {
 	ContentHTML string
 }
 
-type EmailSender interface {
+type Sender interface {
 	SendEmail(email Email) error
 }
