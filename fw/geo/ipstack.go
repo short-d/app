@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/webreq"
+
 	"github.com/short-d/app/fw/logger"
 )
 
@@ -55,7 +56,7 @@ type jsonResponse struct {
 
 type IPStack struct {
 	apiKey      string
-	httpRequest fw.HTTPRequest
+	httpRequest webreq.HTTP
 	logger      logger.Logger
 }
 
@@ -100,7 +101,7 @@ func (I IPStack) GetLocation(ipAddress string) (Location, error) {
 	}, nil
 }
 
-func NewIPStack(apiKey string, httpRequest fw.HTTPRequest, logger logger.Logger) IPStack {
+func NewIPStack(apiKey string, httpRequest webreq.HTTP, logger logger.Logger) IPStack {
 	return IPStack{
 		apiKey:      apiKey,
 		httpRequest: httpRequest,

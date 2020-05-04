@@ -7,7 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/env"
+	"github.com/short-d/app/fw/webreq"
 )
 
 // DataDog logging API =>
@@ -17,9 +18,9 @@ const dataDogLoggingApi = "https://http-intake.logs.datadoghq.com/v1/input"
 var _ EntryRepository = (*DataDogEntryRepo)(nil)
 
 type DataDogEntryRepo struct {
-	apiKey      string
-	httpRequest fw.HTTPRequest
-	env         fw.ServerEnv
+	apiKey  string
+	webReq  webreq.HTTP
+	runtime env.Runtime
 }
 
 func (d DataDogEntryRepo) createLogEntry(
@@ -37,7 +38,7 @@ func (d DataDogEntryRepo) createLogEntry(
 		return
 	}
 	var res = make(map[string]interface{})
-	_ = d.httpRequest.JSON(http.MethodPost, dataDogLoggingApi, headers, string(jsonBody), &res)
+	_ = d.webReq.JSON(http.MethodPost, dataDogLoggingApi, headers, string(jsonBody), &res)
 }
 
 // getSeverity converts internal log severity to DataDog's log status.
@@ -69,7 +70,7 @@ func (d DataDogEntryRepo) requestBody(
 	message string) map[string]string {
 	severity := getSeverity(level)
 	tags := map[string]string{
-		"env":       string(d.env),
+		"env":       string(d.runtime),
 		"line":      fmt.Sprintf("%d", line),
 		"file-name": filename,
 	}
@@ -98,10 +99,10 @@ func (d DataDogEntryRepo) authHeaders() map[string]string {
 	}
 }
 
-func NewDataDogEntryRepo(apiKey string, httpRequest fw.HTTPRequest, env fw.ServerEnv) DataDogEntryRepo {
+func NewDataDogEntryRepo(apiKey string, httpClient webreq.HTTP, runtime env.Runtime) DataDogEntryRepo {
 	return DataDogEntryRepo{
-		apiKey:      apiKey,
-		httpRequest: httpRequest,
-		env:         env,
+		apiKey:  apiKey,
+		webReq:  httpClient,
+		runtime: runtime,
 	}
 }

@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/short-d/app/fw/env"
+	"github.com/short-d/app/fw/webreq"
+
 	"github.com/short-d/app/fw/ctx"
 
 	"github.com/short-d/app/fw/timer"
-
-	"github.com/short-d/app/fw"
 )
 
 // https://docs.datadoghq.com/api/??lang=bash#post-timeseries-points
@@ -39,10 +40,10 @@ type timeSeries struct {
 }
 
 type DataDog struct {
-	apiKey      string
-	httpRequest fw.HTTPRequest
-	timer       timer.Timer
-	serverEnv   fw.ServerEnv
+	apiKey     string
+	webRequest webreq.HTTP
+	timer      timer.Timer
+	runtime    env.Runtime
 }
 
 func (d DataDog) Count(metricID string, point int, interval int, ctx ctx.ExecutionContext) {
@@ -72,7 +73,7 @@ func (d DataDog) recordPoint(
 		return
 	}
 	var res = make(map[string]interface{})
-	_ = d.httpRequest.JSON(http.MethodPost, dataDogMetricsApi, headers, string(jsonBody), &res)
+	_ = d.webRequest.JSON(http.MethodPost, dataDogMetricsApi, headers, string(jsonBody), &res)
 }
 
 func (d DataDog) requestBody(
@@ -84,7 +85,7 @@ func (d DataDog) requestBody(
 	ctx ctx.ExecutionContext,
 ) timeSeries {
 	tags := map[string]string{
-		"env":               string(d.serverEnv),
+		"env":               string(d.runtime),
 		"feature-toggle-id": ctx.FeatureToggleID,
 		"experiment-bucket": ctx.ExperimentBucket,
 	}
@@ -125,14 +126,14 @@ func (d DataDog) authHeaders() map[string]string {
 
 func NewDataDog(
 	apiKey string,
-	httpRequest fw.HTTPRequest,
+	webRequest webreq.HTTP,
 	timer timer.Timer,
-	serverEnv fw.ServerEnv,
+	runtime env.Runtime,
 ) DataDog {
 	return DataDog{
-		apiKey:      apiKey,
-		httpRequest: httpRequest,
-		timer:       timer,
-		serverEnv:   serverEnv,
+		apiKey:     apiKey,
+		webRequest: webRequest,
+		timer:      timer,
+		runtime:    runtime,
 	}
 }

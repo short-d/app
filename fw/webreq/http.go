@@ -1,4 +1,4 @@
-package mdrequest
+package webreq
 
 import (
 	"encoding/json"
@@ -6,11 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-
-	"github.com/short-d/app/fw"
 )
-
-var _ fw.HTTPRequest = (*HTTP)(nil)
 
 type HTTP struct {
 	client http.Client
