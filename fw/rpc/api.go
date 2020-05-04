@@ -1,7 +1,7 @@
-package fw
+package rpc
 
 import "google.golang.org/grpc"
 
-type GRpcAPI interface {
+type API interface {
 	RegisterServers(server *grpc.Server)
 }

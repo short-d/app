@@ -1,6 +1,6 @@
-package fw
+package security
 
-type SecurityPolicy struct {
+type Policy struct {
 	IsEncrypted         bool
 	CertificateFilePath string
 	KeyFilePath         string
