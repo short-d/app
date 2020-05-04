@@ -1,4 +1,4 @@
-package fw
+package cli
 
 type CommandConfig struct {
 	Usage           string

@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/short-d/app/fw/timer"
+
 	"github.com/short-d/app/fw/runtime"
 	"github.com/short-d/app/mdtest"
 )
@@ -149,7 +151,7 @@ func TestLogger_Fatal(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
 			mdtest.Equal(t, nil, err)
-			timer := mdtest.NewTimerFake(now)
+			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
@@ -159,7 +161,7 @@ func TestLogger_Fatal(t *testing.T) {
 			logger := NewLogger(
 				testCase.prefix,
 				testCase.logLevel,
-				timer,
+				tm,
 				programRuntime,
 				EntryRepoFake,
 			)
@@ -301,7 +303,7 @@ func TestLogger_Error(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
 			mdtest.Equal(t, nil, err)
-			timer := mdtest.NewTimerFake(now)
+			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
@@ -311,7 +313,7 @@ func TestLogger_Error(t *testing.T) {
 			logger := NewLogger(
 				testCase.prefix,
 				testCase.logLevel,
-				timer,
+				tm,
 				programRuntime,
 				EntryRepoFake,
 			)
@@ -445,7 +447,7 @@ func TestLogger_Warn(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
 			mdtest.Equal(t, nil, err)
-			timer := mdtest.NewTimerFake(now)
+			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
@@ -455,7 +457,7 @@ func TestLogger_Warn(t *testing.T) {
 			logger := NewLogger(
 				testCase.prefix,
 				testCase.logLevel,
-				timer,
+				tm,
 				programRuntime,
 				EntryRepoFake,
 			)
@@ -579,7 +581,7 @@ func TestLogger_Info(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
 			mdtest.Equal(t, nil, err)
-			timer := mdtest.NewTimerFake(now)
+			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
@@ -589,7 +591,7 @@ func TestLogger_Info(t *testing.T) {
 			logger := NewLogger(
 				testCase.prefix,
 				testCase.logLevel,
-				timer,
+				tm,
 				programRuntime,
 				EntryRepoFake,
 			)
@@ -703,7 +705,7 @@ func TestLogger_Debug(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
 			mdtest.Equal(t, nil, err)
-			timer := mdtest.NewTimerFake(now)
+			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
@@ -713,7 +715,7 @@ func TestLogger_Debug(t *testing.T) {
 			logger := NewLogger(
 				testCase.prefix,
 				testCase.logLevel,
-				timer,
+				tm,
 				programRuntime,
 				EntryRepoFake,
 			)
@@ -817,7 +819,7 @@ func TestLogger_Trace(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			now, err := time.Parse(time.RFC3339, testCase.now)
 			mdtest.Equal(t, nil, err)
-			timer := mdtest.NewTimerFake(now)
+			tm := timer.NewStub(now)
 
 			programRuntime, err := runtime.NewFake(testCase.callers)
 			mdtest.Equal(t, nil, err)
@@ -827,7 +829,7 @@ func TestLogger_Trace(t *testing.T) {
 			logger := NewLogger(
 				testCase.prefix,
 				testCase.logLevel,
-				timer,
+				tm,
 				programRuntime,
 				EntryRepoFake,
 			)

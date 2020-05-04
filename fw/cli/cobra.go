@@ -1,25 +1,24 @@
-package mdcli
+package cli
 
 import (
 	"errors"
 
-	"github.com/short-d/app/fw"
 	"github.com/spf13/cobra"
 )
 
-var _ fw.CommandFactory = (*CobraFactory)(nil)
-var _ fw.Command = (*CobraCommand)(nil)
+var _ CommandFactory = (*CobraFactory)(nil)
+var _ Command = (*CobraCommand)(nil)
 
 type CobraFactory struct{}
 
-func (c CobraFactory) NewCommand(config fw.CommandConfig) fw.Command {
+func (c CobraFactory) NewCommand(config CommandConfig) Command {
 	return CobraCommand{
 		cmd: &cobra.Command{
 			Use:   config.Usage,
 			Short: config.ShortHelpMsg,
 			Long:  config.DetailedHelpMsg,
 			Run: func(cmd *cobra.Command, args []string) {
-				var cmdWrapper fw.Command = CobraCommand{cmd: cmd}
+				var cmdWrapper Command = CobraCommand{cmd: cmd}
 				config.OnExecute(&cmdWrapper, args)
 			},
 		},
@@ -38,7 +37,7 @@ func (c CobraCommand) Execute() error {
 	return c.cmd.Execute()
 }
 
-func (c CobraCommand) AddSubCommand(subCommand fw.Command) error {
+func (c CobraCommand) AddSubCommand(subCommand Command) error {
 	subCobraCmd, ok := subCommand.(CobraCommand)
 	if !ok {
 		return errors.New("fail casting fw.Command to CobraCommand")
