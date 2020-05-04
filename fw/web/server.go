@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/short-d/app/fw/io"
-
 	"github.com/short-d/app/fw/logger"
 )
 
