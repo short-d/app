@@ -1,23 +1,23 @@
-package tool
+package main
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/short-d/app/tool/cli"
-	"github.com/short-d/app/tool/terminal"
-	"github.com/short-d/app/tool/ui"
+	"github.com/short-d/app/fw/cli"
+	"github.com/short-d/app/fw/cli/ui"
+	"github.com/short-d/app/fw/terminal"
+
 	"github.com/short-d/eventbus"
 	"github.com/spf13/cobra"
 )
 
 type SampleTool struct {
-	term            terminal.Terminal
 	exitChannel     eventbus.DataChannel
 	keyUpChannel    eventbus.DataChannel
 	keyDownChannel  eventbus.DataChannel
 	keyEnterChannel eventbus.DataChannel
-	cli             cli.CommandLineTool
+	gui             cli.GUI
 	rootCmd         *cobra.Command
 	radio           ui.Radio
 	languages       []string
@@ -31,21 +31,21 @@ func (s SampleTool) Execute() {
 }
 
 func (s SampleTool) bindKeys() {
-	s.term.OnKeyPress(terminal.CtrlEName, s.exitChannel)
-	s.term.OnKeyPress(terminal.CursorUpName, s.keyUpChannel)
-	s.term.OnKeyPress(terminal.CursorDownName, s.keyDownChannel)
-	s.term.OnKeyPress(terminal.EnterName, s.keyEnterChannel)
+	s.gui.OnKeyPress(terminal.CtrlEName, s.exitChannel)
+	s.gui.OnKeyPress(terminal.CursorUpName, s.keyUpChannel)
+	s.gui.OnKeyPress(terminal.CursorDownName, s.keyDownChannel)
+	s.gui.OnKeyPress(terminal.EnterName, s.keyEnterChannel)
 	fmt.Println("To exit, press Ctrl + E")
 	fmt.Println("To select an item, press Enter")
 }
 
 func (s SampleTool) handleEvents() {
-	s.cli.EnterMainLoop(func() {
+	s.gui.EnterMainLoop(func() {
 		select {
 		case <-s.exitChannel:
 			s.radio.Remove()
 			fmt.Println("Terminating process...")
-			s.cli.Exit()
+			s.gui.Exit()
 		case <-s.keyUpChannel:
 			s.radio.Prev()
 		case <-s.keyDownChannel:
@@ -54,7 +54,7 @@ func (s SampleTool) handleEvents() {
 			s.radio.Remove()
 			selectedItem := s.languages[s.radio.SelectedIdx()]
 			fmt.Printf("Selected %s\n", selectedItem)
-			s.cli.Exit()
+			s.gui.Exit()
 		}
 	})
 }
@@ -76,8 +76,7 @@ func NewSampleTool() SampleTool {
 	}
 
 	sampleTool := SampleTool{
-		term:            term,
-		cli:             cli.NewCommandLineTool(term),
+		gui:             cli.NewGUI(term),
 		exitChannel:     make(eventbus.DataChannel),
 		keyUpChannel:    make(eventbus.DataChannel),
 		keyDownChannel:  make(eventbus.DataChannel),
@@ -94,4 +93,9 @@ func NewSampleTool() SampleTool {
 	}
 	sampleTool.rootCmd = rootCmd
 	return sampleTool
+}
+
+func main() {
+	sampleTool := NewSampleTool()
+	sampleTool.Execute()
 }
