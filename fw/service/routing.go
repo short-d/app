@@ -3,10 +3,9 @@ package service
 import (
 	"net/http"
 
-	"github.com/short-d/app/fw/web"
-
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/router"
+	"github.com/short-d/app/fw/web"
 )
 
 var _ Service = (*Routing)(nil)
