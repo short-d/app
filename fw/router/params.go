@@ -1,3 +1,3 @@
-package mdrouter
+package router
 
-type Params = map[string]string
+type Params map[string]string

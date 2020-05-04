@@ -1,4 +1,4 @@
-package mdrouter
+package router
 
 import (
 	"net/http"
@@ -9,13 +9,6 @@ type HTTPHandler struct {
 }
 
 type Handle func(w http.ResponseWriter, r *http.Request, params Params)
-
-type route struct {
-	method      string
-	pathMatcher URIMatcher
-	queryParams []string
-	handle      Handle
-}
 
 func (r HTTPHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	for _, route := range r.routes {

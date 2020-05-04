@@ -1,4 +1,4 @@
-package mdrouter
+package router
 
 import (
 	"io/ioutil"

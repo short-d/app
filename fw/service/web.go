@@ -1,22 +1,22 @@
-package mdhttp
+package service
 
 import (
 	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/logger"
+
 	"github.com/short-d/app/modern/mdio"
 )
 
-type Server struct {
+type WebServer struct {
 	mux    *http.ServeMux
 	server *http.Server
-	tracer fw.Tracer
-	logger fw.Logger
+	logger logger.Logger
 }
 
-func (s *Server) ListenAndServe(port int) error {
+func (s *WebServer) ListenAndServe(port int) error {
 	addr := fmt.Sprintf(":%d", port)
 
 	s.server = &http.Server{Addr: addr, Handler: s.mux}
@@ -29,11 +29,11 @@ func (s *Server) ListenAndServe(port int) error {
 	return err
 }
 
-func (s Server) Shutdown() error {
+func (s WebServer) Shutdown() error {
 	return s.server.Shutdown(context.Background())
 }
 
-func (s Server) HandleFunc(pattern string, handler http.Handler) {
+func (s WebServer) HandleFunc(pattern string, handler http.Handler) {
 	s.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		w = setupPreFlight(w)
 		if (*r).Method == "OPTIONS" {
@@ -61,11 +61,10 @@ func enableCors(w http.ResponseWriter) http.ResponseWriter {
 	return w
 }
 
-func NewServer(logger fw.Logger, tracer fw.Tracer) Server {
+func NewWebServer(logger logger.Logger) WebServer {
 	mux := http.NewServeMux()
-	return Server{
+	return WebServer{
 		mux:    mux,
-		tracer: tracer,
 		logger: logger,
 	}
 }
