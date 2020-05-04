@@ -1,7 +1,7 @@
 package analytics
 
 import (
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/ctx"
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/timer"
 	"gopkg.in/segmentio/analytics-go.v3"
@@ -50,7 +50,7 @@ func (s Segment) Alias(prevUserID string, newUserID string) {
 	})
 }
 
-func (s Segment) Track(eventName string, properties map[string]string, userID string, ctx fw.ExecutionContext) {
+func (s Segment) Track(eventName string, properties map[string]string, userID string, ctx ctx.ExecutionContext) {
 	props := analytics.NewProperties()
 	for prop, val := range properties {
 		props.Set(prop, val)
@@ -68,7 +68,7 @@ func (s Segment) Track(eventName string, properties map[string]string, userID st
 	})
 }
 
-func trackGeoLocation(ctx fw.ExecutionContext, props *analytics.Properties) {
+func trackGeoLocation(ctx ctx.ExecutionContext, props *analytics.Properties) {
 	props.Set("continent-code", ctx.Location.Continent.Code)
 	props.Set("continent-name", ctx.Location.Continent.Name)
 	props.Set("country-code", ctx.Location.Country.Code)

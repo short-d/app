@@ -1,11 +1,15 @@
-package fw
+package ctx
 
-import "time"
+import (
+	"time"
+
+	"github.com/short-d/app/fw/geo"
+)
 
 type ExecutionContext struct {
 	RequestID        string
 	RequestStartAt   time.Time
-	Location         Location
+	Location         geo.Location
 	FeatureToggleID  string
 	ExperimentBucket string
 }

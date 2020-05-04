@@ -3,13 +3,14 @@ package service
 import (
 	"github.com/short-d/app/fw/graphql"
 	"github.com/short-d/app/fw/logger"
+	"github.com/short-d/app/fw/web"
 )
 
 var _ Service = (*GraphQL)(nil)
 
 type GraphQL struct {
 	logger    logger.Logger
-	webServer *WebServer
+	webServer *web.Server
 }
 
 func (g GraphQL) StartAsync(port int) {
@@ -42,7 +43,7 @@ func NewGraphQL(
 	graphQLPath string,
 	handler graphql.GraphGopherHandler,
 ) GraphQL {
-	server := NewWebServer(logger)
+	server := web.NewServer(logger)
 	server.HandleFunc(graphQLPath, handler)
 
 	return GraphQL{

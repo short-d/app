@@ -1,4 +1,4 @@
-package fw
+package geo
 
 type Continent struct {
 	Code string
@@ -33,8 +33,4 @@ type Location struct {
 	Currency        Currency
 	Languages       []Language
 	IsEuropeanUnion bool
-}
-
-type GeoLocation interface {
-	GetLocation(ipAddress string) (Location, error)
 }

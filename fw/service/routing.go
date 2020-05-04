@@ -3,6 +3,8 @@ package service
 import (
 	"net/http"
 
+	"github.com/short-d/app/fw/web"
+
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/router"
 )
@@ -11,7 +13,7 @@ var _ Service = (*Routing)(nil)
 
 type Routing struct {
 	logger    logger.Logger
-	webServer *WebServer
+	webServer *web.Server
 }
 
 func (r Routing) StartAsync(port int) {
@@ -56,7 +58,7 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 		}
 	}
 
-	server := NewWebServer(logger)
+	server := web.NewServer(logger)
 	server.HandleFunc("/", &httpRouter)
 
 	return Routing{

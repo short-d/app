@@ -1,4 +1,4 @@
-package mdgeo
+package geo
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/short-d/app/fw/logger"
 )
 
-var _ fw.GeoLocation = (*IPStack)(nil)
+var _ Geo = (*IPStack)(nil)
 
 // Here is IPStack's documentation: https://ipstack.com/documentation
 const baseURL = "http://api.ipstack.com"
@@ -59,39 +59,39 @@ type IPStack struct {
 	logger      logger.Logger
 }
 
-func (I IPStack) GetLocation(ipAddress string) (fw.Location, error) {
+func (I IPStack) GetLocation(ipAddress string) (Location, error) {
 	url := fmt.Sprintf("%s/%s?access_key=%s", baseURL, ipAddress, I.apiKey)
 	res := jsonResponse{}
 	err := I.httpRequest.JSON(http.MethodGet, url, map[string]string{}, "", &res)
 	if err != nil {
 		I.logger.Error(err)
-		return fw.Location{}, err
+		return Location{}, err
 	}
 
-	var languages []fw.Language
+	var languages []Language
 	for _, jsonLanguage := range res.Location.Languages {
-		language := fw.Language{
+		language := Language{
 			Code: jsonLanguage.Code,
 			Name: jsonLanguage.Name,
 		}
 		languages = append(languages, language)
 	}
 
-	return fw.Location{
-		Continent: fw.Continent{
+	return Location{
+		Continent: Continent{
 			Code: res.ContinentCode,
 			Name: res.ContinentName,
 		},
-		Country: fw.Country{
+		Country: Country{
 			Code: res.CountryCode,
 			Name: res.CountryName,
 		},
-		Region: fw.Region{
+		Region: Region{
 			Code: res.RegionCode,
 			Name: res.RegionName,
 		},
 		City: res.City,
-		Currency: fw.Currency{
+		Currency: Currency{
 			Code: res.Currency.Code,
 			Name: res.Currency.Name,
 		},

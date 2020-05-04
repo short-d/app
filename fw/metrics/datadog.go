@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/short-d/app/fw/ctx"
+
 	"github.com/short-d/app/fw/timer"
 
 	"github.com/short-d/app/fw"
@@ -43,15 +45,15 @@ type DataDog struct {
 	serverEnv   fw.ServerEnv
 }
 
-func (d DataDog) Count(metricID string, point int, interval int, ctx fw.ExecutionContext) {
+func (d DataDog) Count(metricID string, point int, interval int, ctx ctx.ExecutionContext) {
 	d.recordPoint(metricID, count, float64(point), interval, ctx)
 }
 
-func (d DataDog) Rate(metricID string, point float32, interval int, ctx fw.ExecutionContext) {
+func (d DataDog) Rate(metricID string, point float32, interval int, ctx ctx.ExecutionContext) {
 	d.recordPoint(metricID, rate, float64(point), interval, ctx)
 }
 
-func (d DataDog) Gauge(metricID string, point float32, ctx fw.ExecutionContext) {
+func (d DataDog) Gauge(metricID string, point float32, ctx ctx.ExecutionContext) {
 	d.recordPoint(metricID, gauge, float64(point), 0, ctx)
 }
 
@@ -60,7 +62,7 @@ func (d DataDog) recordPoint(
 	metricType metricType,
 	point float64,
 	interval int,
-	ctx fw.ExecutionContext,
+	ctx ctx.ExecutionContext,
 ) {
 	headers := d.authHeaders()
 	now := d.timer.Now()
@@ -79,7 +81,7 @@ func (d DataDog) requestBody(
 	point float64,
 	interval int,
 	date time.Time,
-	ctx fw.ExecutionContext,
+	ctx ctx.ExecutionContext,
 ) timeSeries {
 	tags := map[string]string{
 		"env":               string(d.serverEnv),
