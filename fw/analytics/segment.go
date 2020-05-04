@@ -1,4 +1,4 @@
-package mdanalytics
+package analytics
 
 import (
 	"github.com/short-d/app/fw"
