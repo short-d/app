@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/short-d/app/fw"
+	"github.com/short-d/app/fw/io"
 )
 
 var _ EntryRepository = (*Local)(nil)
@@ -23,10 +23,10 @@ const (
 )
 
 type Local struct {
-	stdout fw.StdOut
+	output io.Output
 }
 
-func (local Local) createLogEntry(
+func (l Local) createLogEntry(
 	level LogLevel,
 	prefix string,
 	line int,
@@ -35,10 +35,10 @@ func (local Local) createLogEntry(
 	date time.Time,
 ) {
 	timeStr := date.Format(datetimeFormat)
-	logLevelName := local.getLogLevelName(level)
+	logLevelName := l.getLogLevelName(level)
 	message = fmt.Sprintf("line %d at %s %s", line, filename, message)
 	_, _ = fmt.Fprintf(
-		local.stdout,
+		l.output,
 		"[%s] [%s] %s %s\n",
 		prefix,
 		logLevelName,
@@ -47,7 +47,7 @@ func (local Local) createLogEntry(
 	)
 }
 
-func (local Local) getLogLevelName(level LogLevel) string {
+func (l Local) getLogLevelName(level LogLevel) string {
 	switch level {
 	case LogFatal:
 		return logFatalName
@@ -66,8 +66,8 @@ func (local Local) getLogLevelName(level LogLevel) string {
 	}
 }
 
-func NewLocal(stdout fw.StdOut) Local {
+func NewLocal(output io.Output) Local {
 	return Local{
-		stdout: stdout,
+		output: output,
 	}
 }

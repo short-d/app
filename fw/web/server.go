@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/short-d/app/fw/io"
+
 	"github.com/short-d/app/fw/logger"
-	"github.com/short-d/app/modern/mdio"
 )
 
 type Server struct {
@@ -40,7 +41,7 @@ func (s Server) HandleFunc(pattern string, handler http.Handler) {
 		}
 
 		w = enableCors(w)
-		r.Body = mdio.Tap(r.Body, func(body string) {
+		r.Body = io.Tap(r.Body, func(body string) {
 			s.logger.Info(fmt.Sprintf("HTTP: url=%s host=%s method=%s body=%s", r.URL, r.Host, r.Method, body))
 		})
 		handler.ServeHTTP(w, r)
