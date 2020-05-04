@@ -9,6 +9,7 @@ import (
 var _ Dispatcher = (*Eventbus)(nil)
 
 // EventBus publishes an event to all its subscribers
+// TODO(issue#84): replace Eventbus with github.com/short-d/eventbus
 type Eventbus struct {
 	eventBus EventBus.Bus
 	lock     sync.RWMutex
