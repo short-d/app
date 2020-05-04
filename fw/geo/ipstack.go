@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/short-d/app/fw/webreq"
-
 	"github.com/short-d/app/fw/logger"
+	"github.com/short-d/app/fw/webreq"
 )
 
 var _ Geo = (*IPStack)(nil)
