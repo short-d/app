@@ -16,7 +16,7 @@ type Routing struct {
 }
 
 func (r Routing) StartAsync(port int) {
-	r.logger.Info("Routing service started")
+	defer r.logger.Info("Routing service started")
 
 	go func() {
 		err := r.webServer.ListenAndServe(port)
