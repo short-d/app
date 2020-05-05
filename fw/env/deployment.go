@@ -16,33 +16,29 @@ const (
 )
 
 type Deployment struct {
-	env Env
+	runtime Runtime
 }
 
 func (d Deployment) IsProduction() bool {
-	return d.GetRuntime() == Production
+	return d.runtime == Production
 }
 
 func (d Deployment) IsPreProd() bool {
-	return d.GetRuntime() == PreProd
+	return d.runtime == PreProd
 }
 
 func (d Deployment) IsStaging() bool {
-	return d.GetRuntime() == Staging
+	return d.runtime == Staging
 }
 
 func (d Deployment) IsTesting() bool {
-	return d.GetRuntime() == Testing
+	return d.runtime == Testing
 }
 
-func (d Deployment) IsLocal() bool {
-	return d.GetRuntime() == Development
+func (d Deployment) IsDevelopment() bool {
+	return d.runtime == Development
 }
 
-func (d Deployment) GetRuntime() Runtime {
-	return Runtime(d.env.GetVar("ENV", string(Development)))
-}
-
-func NewDeployment(env Env) Deployment {
-	return Deployment{env: env}
+func NewDeployment(runtime Runtime) Deployment {
+	return Deployment{runtime: runtime}
 }

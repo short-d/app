@@ -39,12 +39,17 @@ func (c Client) Query(query Query, headers map[string]string, response interface
 	return err
 }
 
-func (c Client) SetRootUrl(root string) {
-	c.root = root
+type ClientFactory struct {
+	httpClient webreq.HTTP
 }
 
-func NewClient(httpClient webreq.HTTP) Client {
+func (c ClientFactory) NewClient(root string) Client {
 	return Client{
-		httpClient: httpClient,
+		httpClient: c.httpClient,
+		root:       root,
 	}
+}
+
+func NewClientFactory(httpClient webreq.HTTP) ClientFactory {
+	return ClientFactory{httpClient: httpClient}
 }

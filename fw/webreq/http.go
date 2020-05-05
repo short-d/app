@@ -55,3 +55,7 @@ func NewHTTP(client http.Client) HTTP {
 		client: client,
 	}
 }
+
+func NewHTTPClient() http.Client {
+	return http.Client{}
+}

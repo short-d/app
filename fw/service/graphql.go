@@ -41,7 +41,7 @@ func (g GraphQL) StartAndWait(port int) {
 func NewGraphQL(
 	logger logger.Logger,
 	graphQLPath string,
-	handler graphql.GraphGopherHandler,
+	handler graphql.Handler,
 ) GraphQL {
 	server := web.NewServer(logger)
 	server.HandleFunc(graphQLPath, handler)

@@ -1,3 +1,6 @@
 package graphql
 
-type Query interface{}
+type Query struct {
+	Query     string
+	Variables map[string]interface{}
+}
