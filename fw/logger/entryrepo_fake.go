@@ -34,3 +34,13 @@ func (f *EntryRepoFake) createLogEntry(
 		Date:     date.Format(time.RFC3339),
 	})
 }
+
+func (f EntryRepoFake) GetEntries() []Entry {
+	return f.entries
+}
+
+func NewEntryRepoFake() EntryRepoFake {
+	return EntryRepoFake{
+		entries: make([]Entry, 0),
+	}
+}

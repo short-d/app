@@ -126,12 +126,12 @@ func NewDataDog(
 	apiKey string,
 	webRequest webreq.HTTP,
 	timer timer.Timer,
-	deployment env.Deployment,
+	runtime env.Runtime,
 ) DataDog {
 	return DataDog{
 		apiKey:     apiKey,
 		webRequest: webRequest,
 		timer:      timer,
-		runtime:    deployment.GetRuntime(),
+		runtime:    runtime,
 	}
 }
