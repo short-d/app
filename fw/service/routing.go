@@ -1,10 +1,11 @@
 package service
 
 import (
-	"net/http"
-
+	"github.com/short-d/app/fw/io"
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/router"
+	"github.com/short-d/app/fw/runtime"
+	"github.com/short-d/app/fw/timer"
 	"github.com/short-d/app/fw/web"
 )
 
@@ -48,10 +49,8 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 			route.Method,
 			route.MatchPrefix,
 			route.Path,
-			func(w http.ResponseWriter, r *http.Request, params router.Params,
-			) {
-				route.Handle(w, r, params)
-			})
+			route.Handle,
+		)
 		if err != nil {
 			panic(err)
 		}
@@ -63,5 +62,31 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 	return Routing{
 		logger:    logger,
 		webServer: &server,
+	}
+}
+
+type RoutingBuilder struct {
+	logger logger.Logger
+	routes []router.Route
+}
+
+func (r *RoutingBuilder) Routes(routes []router.Route) *RoutingBuilder {
+	r.routes = routes
+	return r
+}
+
+func (r RoutingBuilder) Build() Routing {
+	return NewRouting(r.logger, r.routes)
+}
+
+func NewRoutingBuilder(name string) *RoutingBuilder {
+	tm := timer.NewSystem()
+	rt := runtime.NewProgram()
+	stdOut := io.NewStdOut()
+	entryRepo := logger.NewLocal(stdOut)
+	lg := logger.NewLogger(name, logger.LogInfo, tm, rt, entryRepo)
+	return &RoutingBuilder{
+		logger: lg,
+		routes: make([]router.Route, 0),
 	}
 }
