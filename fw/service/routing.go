@@ -1,8 +1,6 @@
 package service
 
 import (
-	"net/http"
-
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/router"
 	"github.com/short-d/app/fw/web"
@@ -48,10 +46,8 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 			route.Method,
 			route.MatchPrefix,
 			route.Path,
-			func(w http.ResponseWriter, r *http.Request, params router.Params,
-			) {
-				route.Handle(w, r, params)
-			})
+			route.Handle,
+		)
 		if err != nil {
 			panic(err)
 		}
