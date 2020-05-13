@@ -1,6 +1,6 @@
 package graphql
 
 type Query struct {
-	Query     string
-	Variables map[string]interface{}
+	Query     string                 `json:"query"`
+	Variables map[string]interface{} `json:"variables"`
 }

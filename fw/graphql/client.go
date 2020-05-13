@@ -2,13 +2,16 @@ package graphql
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/short-d/app/fw/webreq"
 )
 
 type graphQLResponse struct {
-	Data interface{} `json:"data"`
+	Data   interface{}   `json:"data"`
+	Errors []interface{} `json:"errors"`
 }
 
 type Client struct {
@@ -28,6 +31,10 @@ func (c Client) Query(query Query, headers map[string]string, response interface
 	err = c.httpClient.JSON(http.MethodPost, c.root, headers, string(reqBuf), &res)
 	if err != nil {
 		return err
+	}
+
+	if len(res.Errors) > 0 {
+		return errors.New(fmt.Sprintf("%v", res.Errors[0]))
 	}
 
 	resBuf, err := json.Marshal(res.Data)
