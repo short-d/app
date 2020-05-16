@@ -18,8 +18,8 @@ func (c CobraFactory) NewCommand(config CommandConfig) Command {
 			Short: config.ShortHelpMsg,
 			Long:  config.DetailedHelpMsg,
 			Run: func(cmd *cobra.Command, args []string) {
-				var cmdWrapper Command = CobraCommand{cmd: cmd}
-				config.OnExecute(&cmdWrapper, args)
+				var cmdWrapper = CobraCommand{cmd: cmd}
+				config.OnExecute(cmdWrapper, args)
 			},
 		},
 	}
@@ -48,4 +48,8 @@ func (c CobraCommand) AddSubCommand(subCommand Command) error {
 
 func (c CobraCommand) AddStringFlag(valueHolder *string, name string, defaultValue string, shortDescription string) {
 	c.cmd.Flags().StringVar(valueHolder, name, defaultValue, shortDescription)
+}
+
+func (c CobraCommand) AddIntFlag(valueHolder *int, name string, defaultValue int, shortDescription string) {
+	c.cmd.Flags().IntVar(valueHolder, name, defaultValue, shortDescription)
 }
