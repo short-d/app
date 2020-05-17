@@ -39,6 +39,10 @@ func main() {
 }
 ```
 
+That's it! Your web page is now live at [http://localhost:8080/Gopher](http://localhost:8080/Gopher)!
+
+![](doc/example/routing.png)
+
 ## Projects using `app`
 
 - [Short](https://short-d.com/r/code): Easy to use URL shortening service
