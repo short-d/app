@@ -16,30 +16,49 @@ Reusable framework for Go apps & command line tools
 
 ## Build your first scalable web service
 
-```go
-func main() {
-	routes := []router.Route{
-		{
-			Method:      http.MethodGet,
-			MatchPrefix: false,
-			Path:        "/:name",
-			Handle: func(w http.ResponseWriter, r *http.Request, params router.Params) {
-				name := params["name"]
-				page := fmt.Sprintf(`<h1>Hello, %s!<h1>`, name)
-				w.Write([]byte(page))
-			},
-		},
-	}
+1. Create `routing.go` with the following content:
 
-	routingService := service.
-		NewRoutingBuilder("Example").
-		Routes(routes).
-		Build()
-	routingService.StartAndWait(8080)
-}
-```
+    ```go
+    package main
+    
+    import (
+    	"fmt"
+    	"net/http"
+    
+    	"github.com/short-d/app/fw/router"
+    	"github.com/short-d/app/fw/service"
+    )
+    
+    func main() {
+    	routes := []router.Route{
+    		{
+    			Method:      http.MethodGet,
+    			MatchPrefix: false,
+    			Path:        "/:name",
+    			Handle: func(w http.ResponseWriter, r *http.Request, params router.Params) {
+    				name := params["name"]
+    				page := fmt.Sprintf(`<h1>Hello, %s!<h1>`, name)
+    				w.Write([]byte(page))
+    			},
+    		},
+    	}
+    
+    	routingService := service.
+    		NewRoutingBuilder("Example").
+    		Routes(routes).
+    		Build()
+	
+    	routingService.StartAndWait(8080)
+    }
+    ```
 
-That's it! You can now visit your web page at [http://localhost:8080/Gopher](http://localhost:8080/Gopher)!
+2. Start the service using this command:
+
+    ```bash
+    go run routing.go
+    ```
+
+3. That's it! You can now visit the web page at [http://localhost:8080/Gopher](http://localhost:8080/Gopher)!
 
 ![](doc/example/routing.png)
 
