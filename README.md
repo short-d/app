@@ -16,7 +16,7 @@ Reusable framework for Go apps & command line tools
 
 ## Build your first scalable web service
 
-1. Create `routing.go` with following content:
+1. Create `routing.go` with the following content:
 
     ```go
     package main
@@ -52,7 +52,7 @@ Reusable framework for Go apps & command line tools
     }
     ```
 
-2. Start the service with the following command:
+2. Start the service using this command:
 
     ```bash
     go run routing.go
