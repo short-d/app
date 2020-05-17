@@ -39,7 +39,7 @@ func main() {
 }
 ```
 
-That's it! Your web page is now live at [http://localhost:8080/Gopher](http://localhost:8080/Gopher)!
+That's it! You can now visit your web page at [http://localhost:8080/Gopher](http://localhost:8080/Gopher)!
 
 ![](doc/example/routing.png)
 
