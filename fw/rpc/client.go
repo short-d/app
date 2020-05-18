@@ -8,16 +8,16 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-type ClientBuilder struct {
+type ClientConnBuilder struct {
 	target      string
 	insecureTLS bool
 }
 
-func (c *ClientBuilder) InsecureTLS() {
+func (c *ClientConnBuilder) InsecureTLS() {
 	c.insecureTLS = true
 }
 
-func (c *ClientBuilder) Build() (*grpc.ClientConn, error) {
+func (c *ClientConnBuilder) Build() (*grpc.ClientConn, error) {
 	if c.insecureTLS {
 		config := &tls.Config{
 			InsecureSkipVerify: true,
@@ -30,7 +30,7 @@ func (c *ClientBuilder) Build() (*grpc.ClientConn, error) {
 	return grpc.Dial(c.target, grpc.WithInsecure())
 }
 
-func NewClientBuilder(hostname string, port int) *ClientBuilder {
+func NewClientConnBuilder(hostname string, port int) *ClientConnBuilder {
 	target := fmt.Sprintf("%s:%d", hostname, port)
-	return &ClientBuilder{target: target}
+	return &ClientConnBuilder{target: target}
 }
