@@ -21,8 +21,8 @@ func (g GraphGopherHandler) ServeHTTP(writer http.ResponseWriter, reader *http.R
 
 func NewGraphGopherHandler(api API) GraphGopherHandler {
 	schema := graphql.MustParseSchema(
-		api.GetSchema(),
-		api.GetResolver(),
+		api.Schema,
+		api.Resolver,
 		graphql.UseStringDescriptions(),
 	)
 	return GraphGopherHandler{handler: relay.Handler{
