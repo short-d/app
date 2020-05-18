@@ -16,6 +16,7 @@ type Routing struct {
 }
 
 func (r Routing) StartAsync(port int) {
+	defer r.logger.Info("You can explore the API using Insomnia: https://insomnia.rest")
 	msg := fmt.Sprintf("Routing service started at http://localhost:%d", port)
 	defer r.logger.Info(msg)
 

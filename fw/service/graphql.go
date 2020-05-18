@@ -17,6 +17,7 @@ type GraphQL struct {
 }
 
 func (g GraphQL) StartAsync(port int) {
+	defer g.logger.Info("You can explore the API using Insomnia: https://insomnia.rest/graphql")
 	msg := fmt.Sprintf("GraphQL service started at http://localhost:%d%s", port, g.graphQLPath)
 	defer g.logger.Info(msg)
 
