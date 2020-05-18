@@ -13,8 +13,9 @@ type ClientConnBuilder struct {
 	insecureTLS bool
 }
 
-func (c *ClientConnBuilder) InsecureTLS() {
+func (c *ClientConnBuilder) InsecureTLS() *ClientConnBuilder {
 	c.insecureTLS = true
+	return c
 }
 
 func (c *ClientConnBuilder) Build() (*grpc.ClientConn, error) {
