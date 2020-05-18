@@ -63,7 +63,6 @@ Reusable framework for Go apps & command line tools
 ![](doc/example/routing.png)
 
 ## More Examples
-You can find all the code examples of `app` framework [here](example)
 
 - [Create GraphQL service](example/graphql/main.go)
 
