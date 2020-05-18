@@ -23,7 +23,8 @@ const (
 )
 
 type Local struct {
-	output io.Output
+	output      io.Output
+	showLogLine bool
 }
 
 func (l Local) createLogEntry(
@@ -36,7 +37,7 @@ func (l Local) createLogEntry(
 ) {
 	timeStr := date.Format(datetimeFormat)
 	logLevelName := l.getLogLevelName(level)
-	message = fmt.Sprintf("line %d at %s %s", line, filename, message)
+	message = l.message(line, filename, message)
 	_, _ = fmt.Fprintf(
 		l.output,
 		"[%s] [%s] %s %s\n",
@@ -45,6 +46,15 @@ func (l Local) createLogEntry(
 		timeStr,
 		message,
 	)
+}
+
+func (l Local) message(line int,
+	filename string,
+	message string) string {
+	if !l.showLogLine {
+		return message
+	}
+	return fmt.Sprintf("line %d at %s %s", line, filename, message)
 }
 
 func (l Local) getLogLevelName(level LogLevel) string {
@@ -66,8 +76,9 @@ func (l Local) getLogLevelName(level LogLevel) string {
 	}
 }
 
-func NewLocal(output io.Output) Local {
+func NewLocal(output io.Output, showLogLine bool) Local {
 	return Local{
-		output: output,
+		output:      output,
+		showLogLine: showLogLine,
 	}
 }
