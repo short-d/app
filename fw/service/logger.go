@@ -11,6 +11,6 @@ func newDefaultLogger(name string) logger.Logger {
 	tm := timer.NewSystem()
 	rt := runtime.NewProgram()
 	stdOut := io.NewStdOut()
-	entryRepo := logger.NewLocal(stdOut)
+	entryRepo := logger.NewLocal(stdOut, false)
 	return logger.NewLogger(name, logger.LogInfo, tm, rt, entryRepo)
 }
