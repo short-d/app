@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	conn, err := rpc.NewClientConnBuilder("localhost", 8082).Build()
+	conn, err := rpc.
+		NewClientConnBuilder("localhost", 8082).
+		Build()
 	if err != nil {
 		panic(err)
 	}
