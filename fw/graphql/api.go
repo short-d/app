@@ -1,6 +1,6 @@
 package graphql
 
-type API interface {
-	GetSchema() string
-	GetResolver() Resolver
+type API struct {
+	Schema   string
+	Resolver Resolver
 }
