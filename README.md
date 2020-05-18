@@ -65,7 +65,7 @@ Reusable framework for Go apps & command line tools
 ## More Examples
 
 - [Create GraphQL service](example/graphql/main.go)
-- [Create gRPC service](example/grpc/main.go)
+- [Create gRPC service](example/grpc)
 
 ## Projects using `app`
 
