@@ -3,451 +3,74 @@ Reusable framework for Go apps & command line tools
 
 ## Features
 
-`app` abstracts out each component of the framework, allowing you to swap out any part at any time you want without changing the rest of your application.
-
-Currently `app` provides the following components:
-
 - HTTP router
 - GraphQL
 - GRPC
-- Database
-  - Driver
-  - Schema & data migration
+- Database migration
 - Environmental variables
-  - Easy retrieving
-  - Automatically load `.env` file when presents
 - JWT
-  - encoding
-  - decoding
-- TLS
 - Email API
 - Timer
 - Logger
-- Tracer
 - Terminal GUI
 
-`app` also includes convenient helpers to facilitate automated testing.
+## Build your first scalable web service
 
-### To be supported
+1. Create `routing.go` with the following content:
 
-- Service registry
-- Message queue
-- Redis Driver
+    ```go
+    package main
+    
+    import (
+    	"fmt"
+    	"net/http"
+    
+    	"github.com/short-d/app/fw/router"
+    	"github.com/short-d/app/fw/service"
+    )
+    
+    func main() {
+    	routes := []router.Route{
+    		{
+    			Method:      http.MethodGet,
+    			MatchPrefix: false,
+    			Path:        "/:name",
+    			Handle: func(w http.ResponseWriter, r *http.Request, params router.Params) {
+    				name := params["name"]
+    				page := fmt.Sprintf(`<h1>Hello, %s!<h1>`, name)
+    				w.Write([]byte(page))
+    			},
+    		},
+    	}
+    
+    	routingService := service.
+    		NewRoutingBuilder("Example").
+    		Routes(routes).
+    		Build()
+	
+    	routingService.StartAndWait(8080)
+    }
+    ```
+
+2. Start the service using this command:
+
+    ```bash
+    go run routing.go
+    ```
+
+3. That's it! You can now visit the web page at [http://localhost:8080/Gopher](http://localhost:8080/Gopher)!
+
+![](doc/example/routing.png)
+
+## More Examples
+
+- [Create GraphQL service](example/graphql/main.go)
+- [Create gRPC service](example/grpc)
 
 ## Projects using `app`
 
-- [Short](https://github.com/byliuyang/short): URL shortening service
-  
-  ![Short screenshots](example/short.png)
-
-- [Kgs](https://github.com/byliuyang/kgs): Distributed Key Generation Service
-
-
-### CLI
-![CLI screenshots](example/cli.png)
-
-## Building your own application
-
-### Managing dependencies
-
-Dependency injection is recommended to make your app easy to change and testable. [wire](https://github.com/google/wire) is a compile time dependency injection framework for Go apps. Here is the example usage:
-
-```go
-//+build wireinject
-var authSet = wire.NewSet(
-	provider.JwtGo,
-
-	wire.Value(provider.TokenValidDuration(oneDay)),
-	provider.Authenticator,
-)
-
-var observabilitySet = wire.NewSet(
-	mdlogger.NewLocal,
-	mdtracer.NewLocal,
-)
-
-func InjectGraphQlService(
-	name string,
-	sqlDB *sql.DB,
-	graphqlPath provider.GraphQlPath,
-	secret provider.ReCaptchaSecret,
-	jwtSecret provider.JwtSecret,
-) mdservice.Service {
-	wire.Build(
-		wire.Bind(new(fw.GraphQlAPI), new(graphql.Short)),
-		wire.Bind(new(url.Retriever), new(url.RetrieverPersist)),
-		wire.Bind(new(url.Creator), new(url.CreatorPersist)),
-		wire.Bind(new(repo.UserURLRelation), new(db.UserURLRelationSQL)),
-		wire.Bind(new(repo.URL), new(*db.URLSql)),
-
-		observabilitySet,
-		authSet,
-
-		mdservice.New,
-		provider.GraphGophers,
-		mdhttp.NewClient,
-		mdrequest.NewHTTP,
-		mdtimer.NewTimer,
-
-		db.NewURLSql,
-		db.NewUserURLRelationSQL,
-		keygen.NewInMemory,
-		url.NewRetrieverPersist,
-		url.NewCreatorPersist,
-		provider.ReCaptchaService,
-		requester.NewVerifier,
-		graphql.NewShort,
-	)
-	return mdservice.Service{}
-}
-```
-
-The following code will be generated after running `wire` command:
-
-```go
-func InjectGraphQlService(name string, sqlDB *sql.DB, graphqlPath provider.GraphQlPath, secret provider.ReCaptchaSecret, jwtSecret provider.JwtSecret) mdservice.Service {
-	logger := mdlogger.NewLocal()
-	tracer := mdtracer.NewLocal()
-	urlSql := db.NewURLSql(sqlDB)
-	retrieverPersist := url.NewRetrieverPersist(urlSql)
-	userURLRelationSQL := db.NewUserURLRelationSQL(sqlDB)
-	keyGenerator := keygen.NewInMemory()
-	creatorPersist := url.NewCreatorPersist(urlSql, userURLRelationSQL, keyGenerator)
-	client := mdhttp.NewClient()
-	httpRequest := mdrequest.NewHTTP(client)
-	reCaptcha := provider.ReCaptchaService(httpRequest, secret)
-	verifier := requester.NewVerifier(reCaptcha)
-	cryptoTokenizer := provider.JwtGo(jwtSecret)
-	timer := mdtimer.NewTimer()
-	tokenValidDuration := _wireTokenValidDurationValue
-	authenticator := provider.Authenticator(cryptoTokenizer, timer, tokenValidDuration)
-	short := graphql.NewShort(logger, tracer, retrieverPersist, creatorPersist, verifier, authenticator)
-	server := provider.GraphGophers(graphqlPath, logger, tracer, short)
-	service := mdservice.New(name, server, logger)
-	return service
-}
-```
-
-### Adding GraphQL API
-
-```go
-package graphql
-
-import (
-	"short/app/adapter/graphql/resolver"
-	"short/app/usecase/auth"
-	"short/app/usecase/requester"
-	"short/app/usecase/url"
-
-	"github.com/byliuyang/app/fw"
-)
-
-var _ fw.GraphQlAPI = (*Short)(nil)
-
-type Short struct {
-	resolver *resolver.Resolver
-}
-
-func (t Short) GetSchema() string {
-	return schema
-}
-
-func (t Short) GetResolver() interface{} {
-	return t.resolver
-}
-
-func NewShort(
-	logger fw.Logger,
-	tracer fw.Tracer,
-	urlRetriever url.Retriever,
-	urlCreator url.Creator,
-	requesterVerifier requester.Verifier,
-	authenticator auth.Authenticator,
-) Short {
-	r := resolver.NewResolver(
-		logger,
-		tracer,
-		urlRetriever,
-		urlCreator,
-		requesterVerifier,
-		authenticator,
-	)
-	return Short{
-		resolver: &r,
-	}
-}
-
-```
-
-### Adding HTTP APIs
-
-```go
-func NewShort(
-	logger fw.Logger,
-	tracer fw.Tracer,
-	webFrontendURL string,
-	timer fw.Timer,
-	urlRetriever url.Retriever,
-	githubOAuth oauth.Github,
-	githubAPI github.API,
-	authenticator auth.Authenticator,
-	accountService service.Account,
-) []fw.Route {
-	githubSignIn := signin.NewOAuth(githubOAuth, githubAPI, accountService, authenticator)
-	frontendURL, err := netURL.Parse(webFrontendURL)
-	if err != nil {
-		panic(err)
-	}
-	return []fw.Route{
-		{
-			Method: "GET",
-			Path:   "/oauth/github/sign-in",
-			Handle: NewGithubSignIn(logger, tracer, githubOAuth, authenticator, webFrontendURL),
-		},
-		{
-			Method: "GET",
-			Path:   "/oauth/github/sign-in/callback",
-			Handle: NewGithubSignInCallback(logger, tracer, githubSignIn, *frontendURL),
-		},
-		{
-			Method: "GET",
-			Path:   "/r/:alias",
-			Handle: NewOriginalURL(logger, tracer, urlRetriever, timer, *frontendURL),
-		},
-	}
-}
-```
-
-### Creating GRPC APIs
-
-```go
-var _ fw.GRpcAPI = (*KgsAPI)(nil)
-
-type KgsAPI struct {
-	keyGenServer KeyGenServer
-}
-
-func (k KgsAPI) RegisterServers(server *grpc.Server) {
-	RegisterKeyGenServer(server, k.keyGenServer)
-}
-
-func NewKgsAPI(keyGenServer KeyGenServer) KgsAPI {
-	return KgsAPI{keyGenServer: keyGenServer}
-}
-```
-
-### Accesing enviromental variables
-
-```go
-env := dep.InitEnvironment()
-env.AutoLoadDotEnvFile()
-
-host := env.GetEnv("DB_HOST", "localhost")
-```
-
-### Accessing database
-
-#### Establish connection
-
-```go
-db, err := dbConnector.Connect(dbConfig)
-if err != nil {
-	panic(err)
-}
-```
-
-#### Migrate schema & data
-
-```go
-err = dbMigrationTool.Migrate(db, migrationRoot)
-if err != nil {
-	panic(err)
-}
-```
-
-```sql
--- create_table.sql
-
--- +migrate Up
-CREATE TABLE available_key (
-    key VARCHAR(10),
-    created_at TIMESTAMP WITH TIME ZONE
-);
-
--- +migrate Down
-DROP TABLE available_key;
-```
-
-```-- +migrate Up``` and ```-- +migrate Down``` comments are required.
-
-### Builing command line tools
-
-#### Without GUI
-
-```go
-// main.go
-rootCmd := cmd.NewRootCmd(
-	dbConfig,
-	dbConnector,
-	dbMigrationTool,
-	securityPolicy,
-	gRpcAPIPort,
-)
-cmd.Execute(rootCmd)
-```
-
-```go
-// cmd/cmd.go
-
-// NewRootCmd creates and initializes root command
-func NewRootCmd(
-	dbConfig fw.DBConfig,
-	dbConnector fw.DBConnector,
-	dbMigrationTool fw.DBMigrationTool,
-	securityPolicy fw.SecurityPolicy,
-	gRpcAPIPort int,
-) fw.Command {
-	var migrationRoot string
-
-	cmdFactory := dep.InitCommandFactory()
-	startCmd := cmdFactory.NewCommand(
-		fw.CommandConfig{
-			Usage: "start",
-			OnExecute: func(cmd *fw.Command, args []string) {
-				app.Start(
-					dbConfig,
-					migrationRoot,
-					dbConnector,
-					dbMigrationTool,
-					securityPolicy,
-					gRpcAPIPort,
-				)
-			},
-		},
-	)
-	startCmd.AddStringFlag(&migrationRoot, "migration", "app/adapter/migration", "migration migrations root directory")
-
-	rootCmd := cmdFactory.NewCommand(
-		fw.CommandConfig{
-			Usage:     "kgs",
-			OnExecute: func(cmd *fw.Command, args []string) {},
-		},
-	)
-	err := rootCmd.AddSubCommand(startCmd)
-	if err != nil {
-		panic(err)
-	}
-	return rootCmd
-}
-
-// Execute runs root command
-func Execute(rootCmd fw.Command) {
-	err := rootCmd.Execute()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-```
-
-#### With GUI
-
-```go
-// main.go
-func main() {
-	sampleTool := tool.NewSampleTool()
-	sampleTool.Execute()
-}
-```
-
-```go
-// tool/sample.go
-
-type SampleTool struct {
-	term            terminal.Terminal
-	exitChannel     eventbus.DataChannel
-	keyUpChannel    eventbus.DataChannel
-	keyDownChannel  eventbus.DataChannel
-	keyEnterChannel eventbus.DataChannel
-	cli             cli.CommandLineTool
-	rootCmd         *cobra.Command
-	radio           ui.Radio
-	languages       []string
-}
-
-func (s SampleTool) Execute() {
-	if err := s.rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func (s SampleTool) bindKeys() {
-	s.term.OnKeyPress(terminal.CtrlEName, s.exitChannel)
-	s.term.OnKeyPress(terminal.CursorUpName, s.keyUpChannel)
-	s.term.OnKeyPress(terminal.CursorDownName, s.keyDownChannel)
-	s.term.OnKeyPress(terminal.EnterName, s.keyEnterChannel)
-	fmt.Println("To exit, press Ctrl + E")
-	fmt.Println("To select an item, press Enter")
-}
-
-func (s SampleTool) handleEvents() {
-	s.cli.EnterMainLoop(func() {
-		select {
-		case <-s.exitChannel:
-			s.radio.Remove()
-			fmt.Println("Terminating process...")
-			s.cli.Exit()
-		case <-s.keyUpChannel:
-			s.radio.Prev()
-		case <-s.keyDownChannel:
-			s.radio.Next()
-		case <-s.keyEnterChannel:
-			s.radio.Remove()
-			selectedItem := s.languages[s.radio.SelectedIdx()]
-			fmt.Printf("Selected %s\n", selectedItem)
-			s.cli.Exit()
-		}
-	})
-}
-
-func NewSampleTool() SampleTool {
-	term := terminal.NewTerminal()
-	languages := []string{
-		"Go",
-		"Rust",
-		"C",
-		"C++",
-		"Java",
-		"Python",
-		"C#",
-		"JavaScript",
-		"TypeScript",
-		"Swift",
-		"Kotlin",
-	}
-
-	sampleTool := SampleTool{
-		term:            term,
-		cli:             cli.NewCommandLineTool(term),
-		exitChannel:     make(eventbus.DataChannel),
-		keyUpChannel:    make(eventbus.DataChannel),
-		keyDownChannel:  make(eventbus.DataChannel),
-		keyEnterChannel: make(eventbus.DataChannel),
-		radio:           ui.NewRadio(languages, 3, term),
-		languages:       languages,
-	}
-	rootCmd := &cobra.Command{
-		Run: func(cmd *cobra.Command, args []string) {
-			sampleTool.bindKeys()
-			sampleTool.radio.Render()
-			sampleTool.handleEvents()
-		},
-	}
-	sampleTool.rootCmd = rootCmd
-	return sampleTool
-}
-```
+- [Short](https://short-d.com/r/code): Easy to use URL shortening service
+- [Kgs](https://short-d.com/r/kgs): Distributed unique key generation service
 
 ## Contributing
 
@@ -485,4 +108,4 @@ discuss bugs, dev environment setup, tooling, and coding best practices.
 Harry Liu - [byliuyang](https://github.com/byliuyang)
 
 ## License
-This project is maintained under MIT license
+This project is maintained under MIT license.
