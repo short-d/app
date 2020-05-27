@@ -1,11 +1,10 @@
 package service
 
 import (
-	"github.com/short-d/app/fw/io"
+	"fmt"
+
 	"github.com/short-d/app/fw/logger"
 	"github.com/short-d/app/fw/router"
-	"github.com/short-d/app/fw/runtime"
-	"github.com/short-d/app/fw/timer"
 	"github.com/short-d/app/fw/web"
 )
 
@@ -17,7 +16,9 @@ type Routing struct {
 }
 
 func (r Routing) StartAsync(port int) {
-	defer r.logger.Info("Routing service started")
+	defer r.logger.Info("You can explore the API using Insomnia: https://insomnia.rest")
+	msg := fmt.Sprintf("Routing service started at http://localhost:%d", port)
+	defer r.logger.Info(msg)
 
 	go func() {
 		err := r.webServer.ListenAndServe(port)
@@ -80,11 +81,7 @@ func (r RoutingBuilder) Build() Routing {
 }
 
 func NewRoutingBuilder(name string) *RoutingBuilder {
-	tm := timer.NewSystem()
-	rt := runtime.NewProgram()
-	stdOut := io.NewStdOut()
-	entryRepo := logger.NewLocal(stdOut)
-	lg := logger.NewLogger(name, logger.LogInfo, tm, rt, entryRepo)
+	lg := newDefaultLogger(name)
 	return &RoutingBuilder{
 		logger: lg,
 		routes: make([]router.Route, 0),
