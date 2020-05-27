@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/short-d/app/fw/graphql"
@@ -29,10 +30,10 @@ func (g GraphQL) StartAsync(port int) {
 	}()
 }
 
-func (g GraphQL) Stop() {
+func (g GraphQL) Stop(ctx context.Context) {
 	defer g.logger.Info("GraphQL service stopped")
 
-	err := g.webServer.Shutdown()
+	err := g.webServer.Shutdown(ctx)
 	if err != nil {
 		g.logger.Error(err)
 	}

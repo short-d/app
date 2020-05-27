@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/short-d/app/fw/logger"
@@ -28,10 +29,10 @@ func (r Routing) StartAsync(port int) {
 	}()
 }
 
-func (r Routing) Stop() {
+func (r Routing) Stop(ctx context.Context) {
 	defer r.logger.Info("Routing service stopped")
 
-	err := r.webServer.Shutdown()
+	err := r.webServer.Shutdown(ctx)
 	if err != nil {
 		r.logger.Error(err)
 	}

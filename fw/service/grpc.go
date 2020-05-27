@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"net"
 
@@ -19,8 +20,8 @@ type GRPC struct {
 	logger     logger.Logger
 }
 
-func (g GRPC) Stop() {
-	g.gRPCServer.Stop()
+func (g GRPC) Stop(context.Context) {
+	g.gRPCServer.GracefulStop()
 }
 
 func (g GRPC) StartAsync(port int) {

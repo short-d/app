@@ -28,7 +28,7 @@ func (s *Server) ListenAndServe(port int) error {
 	return err
 }
 
-func (s Server) Shutdown() error {
+func (s Server) Shutdown(ctx context.Context) error {
 	return s.server.Shutdown(context.Background())
 }
 
