@@ -15,6 +15,7 @@ type GraphQL struct {
 	logger      logger.Logger
 	graphQLPath string
 	webServer   *web.Server
+	onShutdown  func()
 }
 
 func (g GraphQL) StartAsync(port int) {
@@ -30,8 +31,14 @@ func (g GraphQL) StartAsync(port int) {
 	}()
 }
 
-func (g GraphQL) Stop(ctx context.Context) {
+func (g GraphQL) Stop(ctx context.Context, cancel context.CancelFunc) {
 	defer g.logger.Info("GraphQL service stopped")
+	defer func() {
+		if g.onShutdown != nil {
+			g.onShutdown()
+		}
+		cancel()
+	}()
 
 	err := g.webServer.Shutdown(ctx)
 	if err != nil {
@@ -41,13 +48,15 @@ func (g GraphQL) Stop(ctx context.Context) {
 
 func (g GraphQL) StartAndWait(port int) {
 	g.StartAsync(port)
-	select {}
+
+	listenForSignals(g)
 }
 
 func NewGraphQL(
 	logger logger.Logger,
 	graphQLPath string,
 	handler graphql.Handler,
+	onShutdown func(),
 ) GraphQL {
 	server := web.NewServer(logger)
 	server.HandleFunc(graphQLPath, handler)
@@ -56,6 +65,7 @@ func NewGraphQL(
 		logger:      logger,
 		graphQLPath: graphQLPath,
 		webServer:   &server,
+		onShutdown:  onShutdown,
 	}
 }
 
@@ -81,7 +91,7 @@ func (g GraphQLBuilder) Build() GraphQL {
 		Resolver: g.resolver,
 	}
 	handler := graphql.NewGraphGopherHandler(api)
-	return NewGraphQL(g.logger, "/graphql", handler)
+	return NewGraphQL(g.logger, "/graphql", handler, nil)
 }
 
 func NewGraphQLBuilder(name string) *GraphQLBuilder {

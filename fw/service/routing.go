@@ -12,8 +12,9 @@ import (
 var _ Service = (*Routing)(nil)
 
 type Routing struct {
-	logger    logger.Logger
-	webServer *web.Server
+	logger     logger.Logger
+	webServer  *web.Server
+	onShutdown func()
 }
 
 func (r Routing) StartAsync(port int) {
@@ -29,8 +30,14 @@ func (r Routing) StartAsync(port int) {
 	}()
 }
 
-func (r Routing) Stop(ctx context.Context) {
+func (r Routing) Stop(ctx context.Context, cancel context.CancelFunc) {
 	defer r.logger.Info("Routing service stopped")
+	defer func() {
+		if r.onShutdown != nil {
+			r.onShutdown()
+		}
+		cancel()
+	}()
 
 	err := r.webServer.Shutdown(ctx)
 	if err != nil {
@@ -40,10 +47,11 @@ func (r Routing) Stop(ctx context.Context) {
 
 func (r Routing) StartAndWait(port int) {
 	r.StartAsync(port)
-	select {}
+
+	listenForSignals(r)
 }
 
-func NewRouting(logger logger.Logger, routes []router.Route) Routing {
+func NewRouting(logger logger.Logger, routes []router.Route, onShutdown func()) Routing {
 	httpRouter := router.NewHTTPHandler()
 
 	for _, route := range routes {
@@ -62,8 +70,9 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 	server.HandleFunc("/", &httpRouter)
 
 	return Routing{
-		logger:    logger,
-		webServer: &server,
+		logger:     logger,
+		webServer:  &server,
+		onShutdown: onShutdown,
 	}
 }
 
@@ -78,7 +87,7 @@ func (r *RoutingBuilder) Routes(routes []router.Route) *RoutingBuilder {
 }
 
 func (r RoutingBuilder) Build() Routing {
-	return NewRouting(r.logger, r.routes)
+	return NewRouting(r.logger, r.routes, nil)
 }
 
 func NewRoutingBuilder(name string) *RoutingBuilder {

@@ -18,9 +18,18 @@ type GRPC struct {
 	gRPCServer *grpc.Server
 	gRPCApi    rpc.API
 	logger     logger.Logger
+	onShutdown func()
 }
 
-func (g GRPC) Stop(context.Context) {
+func (g GRPC) Stop(ctx context.Context, cancel context.CancelFunc) {
+	defer g.logger.Info("gRPC service stopped")
+	defer func() {
+		if g.onShutdown != nil {
+			g.onShutdown()
+		}
+		cancel()
+	}()
+
 	g.gRPCServer.GracefulStop()
 }
 
@@ -43,14 +52,11 @@ func (g GRPC) StartAsync(port int) {
 
 func (g GRPC) StartAndWait(port int) {
 	g.StartAsync(port)
-	select {}
+
+	listenForSignals(g)
 }
 
-func NewGRPC(
-	logger logger.Logger,
-	rpcAPI rpc.API,
-	securityPolicy security.Policy,
-) (GRPC, error) {
+func NewGRPC(logger logger.Logger, rpcAPI rpc.API, securityPolicy security.Policy, onShutdown func()) (GRPC, error) {
 	server := grpc.NewServer()
 	if !securityPolicy.IsEncrypted {
 		return GRPC{
@@ -72,6 +78,7 @@ func NewGRPC(
 		gRPCServer: grpc.NewServer(grpc.Creds(cred)),
 		gRPCApi:    rpcAPI,
 		logger:     logger,
+		onShutdown: onShutdown,
 	}, nil
 }
 
@@ -114,7 +121,7 @@ func (g *GRPCBuilder) Build() (GRPC, error) {
 		CertificateFilePath: g.certPath,
 		KeyFilePath:         g.keyPath,
 	}
-	return NewGRPC(g.logger, rpcAPI, policy)
+	return NewGRPC(g.logger, rpcAPI, policy, nil)
 }
 
 func NewGRPCBuilder(name string) *GRPCBuilder {
