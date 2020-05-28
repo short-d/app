@@ -77,8 +77,9 @@ func NewRouting(logger logger.Logger, routes []router.Route, onShutdown func()) 
 }
 
 type RoutingBuilder struct {
-	logger logger.Logger
-	routes []router.Route
+	logger     logger.Logger
+	routes     []router.Route
+	onShutdown func()
 }
 
 func (r *RoutingBuilder) Routes(routes []router.Route) *RoutingBuilder {
@@ -87,13 +88,14 @@ func (r *RoutingBuilder) Routes(routes []router.Route) *RoutingBuilder {
 }
 
 func (r RoutingBuilder) Build() Routing {
-	return NewRouting(r.logger, r.routes, nil)
+	return NewRouting(r.logger, r.routes, r.onShutdown)
 }
 
-func NewRoutingBuilder(name string) *RoutingBuilder {
+func NewRoutingBuilder(name string, onShutdown func()) *RoutingBuilder {
 	lg := newDefaultLogger(name)
 	return &RoutingBuilder{
-		logger: lg,
-		routes: make([]router.Route, 0),
+		logger:     lg,
+		routes:     make([]router.Route, 0),
+		onShutdown: onShutdown,
 	}
 }
