@@ -105,6 +105,7 @@ type GRPCBuilder struct {
 	certPath        string
 	keyPath         string
 	registerHandler registerHandler
+	onShutdown      func()
 }
 
 func (g *GRPCBuilder) EnableTLS(certPath string, keyPath string) *GRPCBuilder {
@@ -126,10 +127,10 @@ func (g *GRPCBuilder) Build() (GRPC, error) {
 		CertificateFilePath: g.certPath,
 		KeyFilePath:         g.keyPath,
 	}
-	return NewGRPC(g.logger, rpcAPI, policy, nil)
+	return NewGRPC(g.logger, rpcAPI, policy, g.onShutdown)
 }
 
-func NewGRPCBuilder(name string) *GRPCBuilder {
+func NewGRPCBuilder(name string, onShutdown func()) *GRPCBuilder {
 	lg := newDefaultLogger(name)
 	builder := GRPCBuilder{
 		logger:          lg,
@@ -137,6 +138,7 @@ func NewGRPCBuilder(name string) *GRPCBuilder {
 		certPath:        "",
 		keyPath:         "",
 		registerHandler: func(server *grpc.Server) {},
+		onShutdown:      onShutdown,
 	}
 	return &builder
 }
