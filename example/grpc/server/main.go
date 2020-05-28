@@ -22,7 +22,7 @@ func (h helloServer) Hello(ctx context.Context, request *proto.HelloRequest) (*p
 
 func main() {
 	gRPCService, err := service.
-		NewGRPCBuilder("Example").
+		NewGRPCBuilder("Example", nil).
 		RegisterHandler(func(server *grpc.Server) {
 			hs := helloServer{}
 			proto.RegisterHelloServer(server, hs)

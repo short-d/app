@@ -23,7 +23,7 @@ func main() {
 	}
 
 	routingService := service.
-		NewRoutingBuilder("Example").
+		NewRoutingBuilder("Example", nil).
 		Routes(routes).
 		Build()
 	routingService.StartAndWait(8080)
