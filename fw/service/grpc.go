@@ -56,7 +56,8 @@ func (g GRPC) StartAndWait(port int) {
 	listenForSignals(g)
 }
 
-func NewGRPC(logger logger.Logger,
+func NewGRPC(
+	logger logger.Logger,
 	rpcAPI rpc.API,
 	securityPolicy security.Policy,
 	onShutdown func(),
