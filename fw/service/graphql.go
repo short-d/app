@@ -70,9 +70,10 @@ func NewGraphQL(
 }
 
 type GraphQLBuilder struct {
-	logger   logger.Logger
-	schema   string
-	resolver graphql.Resolver
+	logger     logger.Logger
+	schema     string
+	resolver   graphql.Resolver
+	onShutdown func()
 }
 
 func (g *GraphQLBuilder) Schema(schema string) *GraphQLBuilder {
@@ -91,14 +92,15 @@ func (g GraphQLBuilder) Build() GraphQL {
 		Resolver: g.resolver,
 	}
 	handler := graphql.NewGraphGopherHandler(api)
-	return NewGraphQL(g.logger, "/graphql", handler, nil)
+	return NewGraphQL(g.logger, "/graphql", handler, g.onShutdown)
 }
 
-func NewGraphQLBuilder(name string) *GraphQLBuilder {
+func NewGraphQLBuilder(name string, onShutdown func()) *GraphQLBuilder {
 	lg := newDefaultLogger(name)
 	return &GraphQLBuilder{
-		logger:   lg,
-		schema:   "",
-		resolver: nil,
+		logger:     lg,
+		schema:     "",
+		resolver:   nil,
+		onShutdown: onShutdown,
 	}
 }

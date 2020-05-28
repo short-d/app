@@ -36,7 +36,7 @@ type Query {
 	}
 
 	graphQLService := service.
-		NewGraphQLBuilder("Example").
+		NewGraphQLBuilder("Example", nil).
 		Schema(schema).
 		Resolver(&res).
 		Build()
