@@ -31,7 +31,7 @@ func AccessTestDB(
 
 	defer db.Close()
 
-	err = resetDatabase(db, dbMigrationRoot, dbMigrationTool)
+	err = resetDatabase(db)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ func AccessTestDB(
 	consumer(db)
 }
 
-func resetDatabase(db *sql.DB, dbMigrationRoot string, dbMigrationTool db.MigrationTool) error {
+func resetDatabase(db *sql.DB) error {
 	_, err := db.Exec(`
 	DROP SCHEMA public CASCADE;
 	CREATE SCHEMA public;
