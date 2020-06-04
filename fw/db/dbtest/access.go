@@ -45,10 +45,9 @@ func AccessTestDB(
 }
 
 func resetDatabase(db *sql.DB, dbMigrationRoot string, dbMigrationTool db.MigrationTool) error {
-	err := dbMigrationTool.MigrateUp(db, dbMigrationRoot)
-	if err != nil {
-		return err
-	}
-
-	return dbMigrationTool.MigrateDown(db, dbMigrationRoot)
+	_, err := db.Exec(`
+	DROP SCHEMA public CASCADE;
+	CREATE SCHEMA public;
+`)
+	return err
 }
