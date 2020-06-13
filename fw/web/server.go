@@ -28,8 +28,8 @@ func (s *Server) ListenAndServe(port int) error {
 	return err
 }
 
-func (s Server) Shutdown() error {
-	return s.server.Shutdown(context.Background())
+func (s Server) Shutdown(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }
 
 func (s Server) HandleFunc(pattern string, handler http.Handler) {

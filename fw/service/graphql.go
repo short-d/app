@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/short-d/app/fw/graphql"
@@ -14,6 +15,7 @@ type GraphQL struct {
 	logger      logger.Logger
 	graphQLPath string
 	webServer   *web.Server
+	onShutdown  func()
 }
 
 func (g GraphQL) StartAsync(port int) {
@@ -29,10 +31,16 @@ func (g GraphQL) StartAsync(port int) {
 	}()
 }
 
-func (g GraphQL) Stop() {
+func (g GraphQL) Stop(ctx context.Context, cancel context.CancelFunc) {
 	defer g.logger.Info("GraphQL service stopped")
+	defer func() {
+		if g.onShutdown != nil {
+			g.onShutdown()
+		}
+		cancel()
+	}()
 
-	err := g.webServer.Shutdown()
+	err := g.webServer.Shutdown(ctx)
 	if err != nil {
 		g.logger.Error(err)
 	}
@@ -40,13 +48,15 @@ func (g GraphQL) Stop() {
 
 func (g GraphQL) StartAndWait(port int) {
 	g.StartAsync(port)
-	select {}
+
+	listenForSignals(g)
 }
 
 func NewGraphQL(
 	logger logger.Logger,
 	graphQLPath string,
 	handler graphql.Handler,
+	onShutdown func(),
 ) GraphQL {
 	server := web.NewServer(logger)
 	server.HandleFunc(graphQLPath, handler)
@@ -55,13 +65,15 @@ func NewGraphQL(
 		logger:      logger,
 		graphQLPath: graphQLPath,
 		webServer:   &server,
+		onShutdown:  onShutdown,
 	}
 }
 
 type GraphQLBuilder struct {
-	logger   logger.Logger
-	schema   string
-	resolver graphql.Resolver
+	logger     logger.Logger
+	schema     string
+	resolver   graphql.Resolver
+	onShutdown func()
 }
 
 func (g *GraphQLBuilder) Schema(schema string) *GraphQLBuilder {
@@ -80,14 +92,15 @@ func (g GraphQLBuilder) Build() GraphQL {
 		Resolver: g.resolver,
 	}
 	handler := graphql.NewGraphGopherHandler(api)
-	return NewGraphQL(g.logger, "/graphql", handler)
+	return NewGraphQL(g.logger, "/graphql", handler, g.onShutdown)
 }
 
-func NewGraphQLBuilder(name string) *GraphQLBuilder {
+func NewGraphQLBuilder(name string, onShutdown func()) *GraphQLBuilder {
 	lg := newDefaultLogger(name)
 	return &GraphQLBuilder{
-		logger:   lg,
-		schema:   "",
-		resolver: nil,
+		logger:     lg,
+		schema:     "",
+		resolver:   nil,
+		onShutdown: onShutdown,
 	}
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"net"
 
@@ -17,10 +18,19 @@ type GRPC struct {
 	gRPCServer *grpc.Server
 	gRPCApi    rpc.API
 	logger     logger.Logger
+	onShutdown func()
 }
 
-func (g GRPC) Stop() {
-	g.gRPCServer.Stop()
+func (g GRPC) Stop(ctx context.Context, cancel context.CancelFunc) {
+	defer g.logger.Info("gRPC service stopped")
+	defer func() {
+		if g.onShutdown != nil {
+			g.onShutdown()
+		}
+		cancel()
+	}()
+
+	g.gRPCServer.GracefulStop()
 }
 
 func (g GRPC) StartAsync(port int) {
@@ -42,13 +52,15 @@ func (g GRPC) StartAsync(port int) {
 
 func (g GRPC) StartAndWait(port int) {
 	g.StartAsync(port)
-	select {}
+
+	listenForSignals(g)
 }
 
 func NewGRPC(
 	logger logger.Logger,
 	rpcAPI rpc.API,
 	securityPolicy security.Policy,
+	onShutdown func(),
 ) (GRPC, error) {
 	server := grpc.NewServer()
 	if !securityPolicy.IsEncrypted {
@@ -71,6 +83,7 @@ func NewGRPC(
 		gRPCServer: grpc.NewServer(grpc.Creds(cred)),
 		gRPCApi:    rpcAPI,
 		logger:     logger,
+		onShutdown: onShutdown,
 	}, nil
 }
 
@@ -92,6 +105,7 @@ type GRPCBuilder struct {
 	certPath        string
 	keyPath         string
 	registerHandler registerHandler
+	onShutdown      func()
 }
 
 func (g *GRPCBuilder) EnableTLS(certPath string, keyPath string) *GRPCBuilder {
@@ -113,10 +127,10 @@ func (g *GRPCBuilder) Build() (GRPC, error) {
 		CertificateFilePath: g.certPath,
 		KeyFilePath:         g.keyPath,
 	}
-	return NewGRPC(g.logger, rpcAPI, policy)
+	return NewGRPC(g.logger, rpcAPI, policy, g.onShutdown)
 }
 
-func NewGRPCBuilder(name string) *GRPCBuilder {
+func NewGRPCBuilder(name string, onShutdown func()) *GRPCBuilder {
 	lg := newDefaultLogger(name)
 	builder := GRPCBuilder{
 		logger:          lg,
@@ -124,6 +138,7 @@ func NewGRPCBuilder(name string) *GRPCBuilder {
 		certPath:        "",
 		keyPath:         "",
 		registerHandler: func(server *grpc.Server) {},
+		onShutdown:      onShutdown,
 	}
 	return &builder
 }

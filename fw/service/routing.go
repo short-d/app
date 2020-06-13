@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/short-d/app/fw/logger"
@@ -11,8 +12,9 @@ import (
 var _ Service = (*Routing)(nil)
 
 type Routing struct {
-	logger    logger.Logger
-	webServer *web.Server
+	logger     logger.Logger
+	webServer  *web.Server
+	onShutdown func()
 }
 
 func (r Routing) StartAsync(port int) {
@@ -28,10 +30,16 @@ func (r Routing) StartAsync(port int) {
 	}()
 }
 
-func (r Routing) Stop() {
+func (r Routing) Stop(ctx context.Context, cancel context.CancelFunc) {
 	defer r.logger.Info("Routing service stopped")
+	defer func() {
+		if r.onShutdown != nil {
+			r.onShutdown()
+		}
+		cancel()
+	}()
 
-	err := r.webServer.Shutdown()
+	err := r.webServer.Shutdown(ctx)
 	if err != nil {
 		r.logger.Error(err)
 	}
@@ -39,10 +47,11 @@ func (r Routing) Stop() {
 
 func (r Routing) StartAndWait(port int) {
 	r.StartAsync(port)
-	select {}
+
+	listenForSignals(r)
 }
 
-func NewRouting(logger logger.Logger, routes []router.Route) Routing {
+func NewRouting(logger logger.Logger, routes []router.Route, onShutdown func()) Routing {
 	httpRouter := router.NewHTTPHandler()
 
 	for _, route := range routes {
@@ -61,14 +70,16 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 	server.HandleFunc("/", &httpRouter)
 
 	return Routing{
-		logger:    logger,
-		webServer: &server,
+		logger:     logger,
+		webServer:  &server,
+		onShutdown: onShutdown,
 	}
 }
 
 type RoutingBuilder struct {
-	logger logger.Logger
-	routes []router.Route
+	logger     logger.Logger
+	routes     []router.Route
+	onShutdown func()
 }
 
 func (r *RoutingBuilder) Routes(routes []router.Route) *RoutingBuilder {
@@ -77,13 +88,14 @@ func (r *RoutingBuilder) Routes(routes []router.Route) *RoutingBuilder {
 }
 
 func (r RoutingBuilder) Build() Routing {
-	return NewRouting(r.logger, r.routes)
+	return NewRouting(r.logger, r.routes, r.onShutdown)
 }
 
-func NewRoutingBuilder(name string) *RoutingBuilder {
+func NewRoutingBuilder(name string, onShutdown func()) *RoutingBuilder {
 	lg := newDefaultLogger(name)
 	return &RoutingBuilder{
-		logger: lg,
-		routes: make([]router.Route, 0),
+		logger:     lg,
+		routes:     make([]router.Route, 0),
+		onShutdown: onShutdown,
 	}
 }
