@@ -15,11 +15,12 @@ type GraphQL struct {
 	logger      logger.Logger
 	graphQLPath string
 	webServer   *web.Server
+	guiPath     string
 }
 
 func (g GraphQL) StartAsync(port int) {
 	baseURL := fmt.Sprintf("http://localhost:%d", port)
-	defer g.logger.Info(fmt.Sprintf("You can explore the API at: %s/", baseURL))
+	defer g.logger.Info(fmt.Sprintf("You can explore the API at: %s%s", baseURL, g.guiPath))
 	msg := fmt.Sprintf("GraphQL service started at %s%s", baseURL, g.graphQLPath)
 	defer g.logger.Info(msg)
 
@@ -60,12 +61,14 @@ func NewGraphQL(
 	server := web.NewServer(logger)
 	server.Handle(graphQLPath, handler)
 	uiHTML := webUI.RenderHTML()
-	server.Handle("/", serveWebUI(uiHTML))
+	guiPath := "/"
+	server.Handle(guiPath, serveWebUI(uiHTML))
 
 	return GraphQL{
 		logger:      logger,
 		graphQLPath: graphQLPath,
 		webServer:   &server,
+		guiPath:     guiPath,
 	}
 }
 

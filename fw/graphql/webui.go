@@ -5,12 +5,6 @@ import (
 	"html/template"
 )
 
-type WebUI interface {
-	RenderHTML() string
-}
-
-var _ WebUI = (*GraphiQL)(nil)
-
 // GraphiQLConfig contains all the options which can be used to customize
 // GraphiQL editor.
 // You can find more configurations here:
@@ -21,6 +15,12 @@ type GraphiQLConfig struct {
 	VariableEditorOpen bool
 	DocEditorOpen      bool
 }
+
+type WebUI interface {
+	RenderHTML() string
+}
+
+var _ WebUI = (*GraphiQL)(nil)
 
 type GraphiQL struct {
 	html string
