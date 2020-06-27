@@ -32,7 +32,7 @@ func (s Server) Shutdown() error {
 	return s.server.Shutdown(context.Background())
 }
 
-func (s Server) HandleFunc(pattern string, handler http.Handler) {
+func (s Server) Handle(pattern string, handler http.Handler) {
 	s.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		w = setupPreFlight(w)
 		if (*r).Method == "OPTIONS" {
