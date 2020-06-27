@@ -9,7 +9,7 @@ import (
 
 type Handler http.Handler
 
-var _ http.Handler = (*GraphGopherHandler)(nil)
+var _ Handler = (*GraphGopherHandler)(nil)
 
 type GraphGopherHandler struct {
 	handler relay.Handler

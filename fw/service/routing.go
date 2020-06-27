@@ -58,7 +58,7 @@ func NewRouting(logger logger.Logger, routes []router.Route) Routing {
 	}
 
 	server := web.NewServer(logger)
-	server.HandleFunc("/", &httpRouter)
+	server.Handle("/", &httpRouter)
 
 	return Routing{
 		logger:    logger,

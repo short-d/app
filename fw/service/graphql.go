@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/short-d/app/fw/graphql"
 	"github.com/short-d/app/fw/logger"
@@ -17,8 +18,9 @@ type GraphQL struct {
 }
 
 func (g GraphQL) StartAsync(port int) {
-	defer g.logger.Info("You can explore the API using Insomnia: https://insomnia.rest/graphql")
-	msg := fmt.Sprintf("GraphQL service started at http://localhost:%d%s", port, g.graphQLPath)
+	baseURL := fmt.Sprintf("http://localhost:%d", port)
+	defer g.logger.Info(fmt.Sprintf("You can explore the API at: %s/", baseURL))
+	msg := fmt.Sprintf("GraphQL service started at %s%s", baseURL, g.graphQLPath)
 	defer g.logger.Info(msg)
 
 	go func() {
@@ -43,13 +45,22 @@ func (g GraphQL) StartAndWait(port int) {
 	select {}
 }
 
+func serveWebUI(uiHTML string) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		writer.Write([]byte(uiHTML))
+	}
+}
+
 func NewGraphQL(
 	logger logger.Logger,
 	graphQLPath string,
 	handler graphql.Handler,
+	webUI graphql.WebUI,
 ) GraphQL {
 	server := web.NewServer(logger)
-	server.HandleFunc(graphQLPath, handler)
+	server.Handle(graphQLPath, handler)
+	uiHTML := webUI.RenderHTML()
+	server.Handle("/", serveWebUI(uiHTML))
 
 	return GraphQL{
 		logger:      logger,
@@ -80,7 +91,9 @@ func (g GraphQLBuilder) Build() GraphQL {
 		Resolver: g.resolver,
 	}
 	handler := graphql.NewGraphGopherHandler(api)
-	return NewGraphQL(g.logger, "/graphql", handler)
+	const apiEndpoint = "/graphql"
+	webUI := graphql.NewGraphiQL(apiEndpoint, "")
+	return NewGraphQL(g.logger, apiEndpoint, handler, webUI)
 }
 
 func NewGraphQLBuilder(name string) *GraphQLBuilder {
