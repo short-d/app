@@ -9,6 +9,7 @@ type CommandConfig struct {
 
 type Command interface {
 	Execute() error
+	Help() error
 	AddSubCommand(subCommand Command) error
 	AddStringFlag(valueHolder *string, name string, defaultValue string, shortDescription string)
 	AddIntFlag(valueHolder *int, name string, defaultValue int, shortDescription string)
