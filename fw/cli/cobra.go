@@ -33,6 +33,10 @@ type CobraCommand struct {
 	cmd *cobra.Command
 }
 
+func (c CobraCommand) Help() error {
+	return c.cmd.Help()
+}
+
 func (c CobraCommand) Execute() error {
 	return c.cmd.Execute()
 }
