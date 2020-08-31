@@ -17,6 +17,7 @@ require (
 	github.com/segmentio/backo-go v0.0.0-20200129164019-23eae7c10bd3 // indirect
 	github.com/sendgrid/rest v2.4.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
+	github.com/short-d/env v0.0.0-20200831183343-72bae4432464
 	github.com/short-d/eventbus v0.0.0-20200105092235-2dfc4be1f9ee
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/testify v1.4.0
