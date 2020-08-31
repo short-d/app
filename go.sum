@@ -71,6 +71,8 @@ github.com/sendgrid/rest v2.4.1+incompatible h1:HDib/5xzQREPq34lN3YMhQtMkdXxS/qL
 github.com/sendgrid/rest v2.4.1+incompatible/go.mod h1:kXX7q3jZtJXK5c5qK83bSGMdV6tsOE70KbHoqJls4lE=
 github.com/sendgrid/sendgrid-go v3.5.0+incompatible h1:kosbgHyNVYVaqECDYvFVLVD9nvThweBd6xp7vaCT3GI=
 github.com/sendgrid/sendgrid-go v3.5.0+incompatible/go.mod h1:QRQt+LX/NmgVEvmdRw0VT/QgUn499+iza2FnDca9fg8=
+github.com/short-d/env v0.0.0-20200831183343-72bae4432464 h1:W3p+TcmtitK+ZCQRMBAGcUYzWLEBDaV0NhS/HWeL54I=
+github.com/short-d/env v0.0.0-20200831183343-72bae4432464/go.mod h1:fkC2kqbmTerAA7gFJQdbIGz9X1aMhBuIrHwyLl/xgTA=
 github.com/short-d/eventbus v0.0.0-20200105092235-2dfc4be1f9ee h1:LNafZ4caEAcTlgGe9zJ18njsyR+uogkE5+dzZ5LeeAI=
 github.com/short-d/eventbus v0.0.0-20200105092235-2dfc4be1f9ee/go.mod h1:S3Nww0QNubrzHbWTpfzAg8YQLwXuM9GH2cGshOU6GJQ=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=

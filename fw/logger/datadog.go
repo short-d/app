@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/short-d/app/fw/env"
+	"github.com/short-d/env"
 	"github.com/short-d/app/fw/webreq"
 )
 
